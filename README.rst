@@ -17,7 +17,7 @@ Generate changelog from Git commits.
 
 .. image:: https://img.shields.io/badge/license-GPL--2.0--only%20OR%20LGPL--2.1--or--later-blue.svg
    :target: https://github.com/barseghyanartur/matyan/#License
-   :alt: MPL-1.1 OR GPL-2.0-only OR LGPL-2.1-or-later
+   :alt: GPL-2.0-only OR LGPL-2.1-or-later
 
 .. image:: https://coveralls.io/repos/github/barseghyanartur/matyan/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/barseghyanartur/matyan?branch=master

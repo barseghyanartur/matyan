@@ -17,7 +17,7 @@ matrix:
 install: pip install -r requirements/testing.txt
 
 before_script:
-  - sleep 10
+  - sleep 1
 
 script: tox -e $TOX_ENV
 
