@@ -27,136 +27,76 @@ Prerequisites
 =============
 - Python 3.6, 3.7, 3.8 and PyPy
 
-Use cases and basic concepts
-============================
-If the following applies to you, ``matyan`` could help:
+Documentation
+=============
+Documentation is available on `Read the Docs
+<http://matyan.readthedocs.io/>`_.
 
-- Project releases (tags) are numbered according to the
-  `semantic versioning <https://semver.org/>`_ or
-  `sequence based identifiers <http://en.wikipedia.org/wiki/Software_versioning#Sequence-based_identifiers>`_.
-- Project follows the DTAP.
-- Testing, acceptance and production branches (hereafter referred as TAP
-  branches) are protected.
-- Direct commits to TAP branches are forbidden.
-- All commits to TAP branches are made by pull requests.
-- JIRA (or a similar tool) is used for handing project tickets.
-- Pull requests are merged using GitHub or BitBucket web interface.
+Installation
+============
+Latest stable version on PyPI:
 
-Sample use-case
----------------
-The use-case
-~~~~~~~~~~~~
-- JIRA is used for issues.
-- All commits are prefixed with ID of the JIRA issue: for example, `MSFT-1234`
-  or `NVDA-1234` (where first four letters identify the client commit was done
-  for, it's pattern).
-- There are 3 main (protected) branches: `dev`, `staging`, `master`.
-  Direct commits to any of the 3 are forbidden. Any feature/bugfix comes via
-  merge request.
-- All branches do have meaningful prefixes. Example,
-  `feature/MSFT-1234-Title-of-the-issue` or
-  `bugfix/MSFT-1236-prevent-duplicate-postal-codes`.
-- Release flow is `dev` -> `staging` -> `master`.
+.. code-block:: sh
 
-Sample commits
-~~~~~~~~~~~~~~
-Consider the following commits into the dev branch:
+    pip install matyan
 
-*branch: bugfix/MSFT-1240-LinkedIn-authentication-failing*
+Usage
+=====
+See `Basic concepts <https://matyan.readthedocs.io/en/latest/basic_concepts.html>`_
+section to get impression on possible commit methodology and assumptions taken.
 
-- MSFT-1240 Fix package configuration.
-- MSFT-1240 Update authentication pipeline.
+**Generate changelog:**
 
-*branch: deprecation/MSFT-1239-Deprecate-Python2*
+.. code-block:: sh
 
-- MSFT-1239 Deprecate Python2.
-- MSFT-1238 Add initial MyPY setup.
+    generate-changelog
 
-*branch: feature/MSFT-1238-Token-authentication*
+**Generate changelog skipping orphaned commits:**
 
-- MSFT-1238 Implement token authentication.
-- MSFT-1238 Update authentication docs.
+In some cases you only want to show what has been done with tickets and skip
+all non-ticket related commits.
 
-*branch: feature/MSFT-1237-Improve-document-sharing*
+.. code-block:: sh
 
-- MSFT-1237 Improve document sharing. Add option to share via GDrive.
+    generate-changelog --no-other
 
-*branch: bugfix/MSFT-1236-prevent-duplicate-postal-codes*
+**Generate changelog between two releases:**
 
-- MSFT-1236 Normalise postal codes for German addresses.
-- MSFT-1236 Normalise postal codes for US addresses.
-- MSFT-1236 Make postal code field unique for the country.
+In some cases you only want to show what has been done since last release.
+The following example would generate changelog since version 0.0.1 to
+version 0.0.3.
 
-*branch: deprecation/MSFT-1235-deprecate-old-api*
+.. code-block:: sh
 
-- MSFT-1235 Deprecate API v 2.0.
-- MSFT-1235 Update docs.
+    generate-changelog 0.0.1..0.0.3
 
-*branch: feature/MSFT-1234-car-type-suggester*
+**Generate changelog between two branches:**
 
-- MSFT-1234 Initial car type suggester implementation.
-- MSFT-1234 Add insurance amount indication based on car weight.
+In some cases you only want to show what has been done since last release.
+The following example would generate changelog since version 0.0.1 to
+version 0.0.3.
 
-Sample releases
-~~~~~~~~~~~~~~~
-All commits have been finally merged into master.
+.. code-block:: sh
 
-Releases have been made in the following way:
+    generate-changelog master..dev
 
-*0.1*
+**Generate changelog with releases info shown**
 
-- Merged issues MSFT-1234, MSFT-1235 and MSFT-1236
+.. code-block:: sh
 
-*0.2*
+    generate-changelog --show-releases
 
-- Merged issues MSFT-1237 and MSFT-1238
+**Generate changelog between releases with releases info shown**
 
-*Yet unreleased features/branches*
+.. code-block:: sh
 
-- MSFT-1239 and
+    generate-changelog 0.0.1..0.0.3 --show-releases
 
-Sample changelog output
------------------------
-The generated change log would look as follows:
+**Generate changelog between branches with releases info shown**
 
-.. code-block:: text
+.. code-block:: sh
 
-    ### 0.2
-
-    **Features**
-
-    *MSFT-1238 Token-authentication*
-
-    - Implement token authentication.
-    - Update authentication docs.
-
-    *MSFT-1237 Improve document sharing*
-
-    - Improve document sharing. Add option to share via GDrive.
-
-    ### 0.1
-
-    **Bugfixes**
-
-    *MSFT-1236 Prevent duplicate postal codes*
-
-    - Normalise postal codes for German addresses.
-    - Normalise postal codes for US addresses.
-    - Make postal code field unique for the country.
-
-    **Deprecations**
-
-    *MSFT-1235 Deprecate old api*
-
-    - Deprecate API v 2.0.
-    - Update docs.
-
-    **Features**
-
-    *MSFT-1234 Car type suggester*
-
-    - Initial car type suggester implementation.
-    - Add insurance amount indication based on car weight.
+    generate-changelog master..dev --show-releases
 
 Configuration
 =============
@@ -205,58 +145,6 @@ Create initial config file
 .. code-block:: sh
 
     matyan-create-config
-
-Documentation
-=============
-Documentation is available on `Read the Docs
-<http://matyan.readthedocs.io/>`_.
-
-Installation
-============
-Latest stable version on PyPI:
-
-.. code-block:: sh
-
-    pip install matyan
-
-Usage
-=====
-**Generate changelog:**
-
-.. code-block:: sh
-
-    generate-changelog
-
-**Generate changelog skipping orphaned commits:**
-
-In some cases you only want to show what has been done with tickets and skip
-all non-ticket related commits.
-
-.. code-block:: sh
-
-    generate-changelog --no-other
-
-**Generate changelog between two releases:**
-
-In some cases you only want to show what has been done since last release.
-The following example would generate changelog since version 0.0.1 to
-version 0.0.3.
-
-.. code-block:: sh
-
-    generate-changelog 0.0.1..0.0.3
-
-**Generate changelog with releases info shown**
-
-.. code-block:: sh
-
-    generate-changelog --show-releases
-
-**Generate changelog between releases with releases info shown**
-
-.. code-block:: sh
-
-    generate-changelog 0.0.1..0.0.3 --show-releases
 
 Testing
 =======
