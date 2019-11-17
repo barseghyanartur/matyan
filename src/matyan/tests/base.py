@@ -3,10 +3,10 @@
 import logging
 import socket
 
-__title__ = 'tld.tests.base'
+__title__ = 'matyan.tests.base'
 __author__ = 'Artur Barseghyan'
-__copyright__ = '2013-2019 Artur Barseghyan'
-__license__ = 'MPL-1.1 OR GPL-2.0-only OR LGPL-2.0-or-later'
+__copyright__ = '2019 Artur Barseghyan'
+__license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
     'internet_available_only',
     'log_info',

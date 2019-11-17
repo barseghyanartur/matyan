@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import unittest
 
@@ -7,7 +5,7 @@ import subprocess
 
 from .base import log_info, internet_available_only
 
-__title__ = 'tld.tests.test_commands'
+__title__ = 'matyan.tests.test_commands'
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2013-2019 Artur Barseghyan'
 __license__ = 'GPL 2.0/LGPL 2.1'
@@ -17,16 +15,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 class TestCommands(unittest.TestCase):
-    """Tld commands tests."""
+    """Matyan commands tests."""
 
     def setUp(self):
         """Set up."""
 
     @internet_available_only
     @log_info
-    def test_1_update_tld_names_command(self):
-        """Test updating the tld names (re-fetch mozilla source)."""
-        res = subprocess.check_output('update-tld-names').strip()
+    def test_01_generate_changelog_command(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output('generate-changelog').strip()
         self.assertEqual(res, b'')
         return res
 

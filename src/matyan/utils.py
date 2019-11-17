@@ -31,10 +31,15 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
+    'create_default_config_file',
     'generate_changelog_cli',
+    'generate_empty_tree',
+    'get_branch_type',
+    'get_logs',
     'json_changelog_cli',
     'prepare_changelog',
     'prepare_releases_changelog',
+    'validate_between',
 )
 
 REPOSITORY = git.Git(os.getcwd())
@@ -634,3 +639,11 @@ def generate_changelog_cli() -> Type[None]:
                         )
 
     return '\n'.join(changelog)
+
+
+def create_default_config_file():
+    """Create default config file.
+
+    :return:
+    """
+    pass
