@@ -29,12 +29,6 @@ Prerequisites
 
 Use cases and basic concepts
 ============================
-`Matyan` does a good job generating changelog from Git commits. Think of DTAP
-development, GitFlow-like concepts, JIRA (or similar tool for handling tickets
-and reviewing pull requests).
-
-How would you know it could be useful?
---------------------------------------
 If the following applies to you, ``matyan`` could help:
 
 - Project releases (tags) are numbered according to the
@@ -45,6 +39,7 @@ If the following applies to you, ``matyan`` could help:
   branches) are protected.
 - Direct commits to TAP branches are forbidden.
 - All commits to TAP branches are made by pull requests.
+- JIRA (or a similar tool) is used for handing project tickets.
 - Pull requests are merged using GitHub or BitBucket web interface.
 
 Sample use-case
@@ -66,6 +61,16 @@ The use-case
 Sample commits
 ~~~~~~~~~~~~~~
 Consider the following commits into the dev branch:
+
+*branch: bugfix/MSFT-1240-LinkedIn-authentication-failing*
+
+- MSFT-1240 Fix package configuration.
+- MSFT-1240 Update authentication pipeline.
+
+*branch: deprecation/MSFT-1239-Deprecate-Python2*
+
+- MSFT-1239 Deprecate Python2.
+- MSFT-1238 Add initial MyPY setup.
 
 *branch: feature/MSFT-1238-Token-authentication*
 
@@ -105,6 +110,10 @@ Releases have been made in the following way:
 *0.2*
 
 - Merged issues MSFT-1237 and MSFT-1238
+
+*Yet unreleased features/branches*
+
+- MSFT-1239 and
 
 Sample changelog output
 -----------------------
@@ -190,6 +199,13 @@ Write to file
 
     generate-changelog --show-releases 2>&1 | tee changelog.md
 
+Create initial config file
+--------------------------
+
+.. code-block:: sh
+
+    matyan-create-config
+
 Documentation
 =============
 Documentation is available on `Read the Docs
@@ -203,20 +219,8 @@ Latest stable version on PyPI:
 
     pip install matyan
 
-Or latest stable version from GitHub:
-
-.. code-block:: sh
-
-    pip install https://github.com/barseghyanartur/matyan/archive/stable.tar.gz
-
-Or latest stable version from BitBucket:
-
-.. code-block:: sh
-
-    pip install https://bitbucket.org/barseghyanartur/matyan/get/stable.tar.gz
-
-Usage examples
-==============
+Usage
+=====
 **Generate changelog:**
 
 .. code-block:: sh

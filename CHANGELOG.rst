@@ -15,8 +15,19 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.3
+---
+2019-11-17
+
+- Minor fixes.
+- Add `matyan-create-config` command.
+
+0.2
+---
+2019-11-17
+
 0.1
 ---
-2019-11-18
+2019-11-17
 
 - Initial release.

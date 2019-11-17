@@ -4,18 +4,12 @@ import json
 import os
 import re
 import sys
+from shutil import copyfile
 from pprint import pprint
 from typing import Union, Dict, AnyStr, Type, Any
 import git
 from git.exc import GitCommandError
 
-from .patterns import (
-    REGEX_PATTERN_BRANCH_NAME,
-    REGEX_PATTERN_MERGED_BRANCH_NAME,
-    REGEX_PATTERN_COMMIT,
-    REGEX_PATTERN_COMMIT_LINE,
-    REGEX_PATTERN_TAG,
-)
 from .labels import (
     get_all_branch_types,
     get_other_branch_type,
@@ -25,6 +19,14 @@ from .labels import (
     get_unreleased_key,
     get_unreleased_key_label,
     get_ignore_commits_exact_words,
+)
+from .helpers import project_dir
+from .patterns import (
+    REGEX_PATTERN_BRANCH_NAME,
+    REGEX_PATTERN_MERGED_BRANCH_NAME,
+    REGEX_PATTERN_COMMIT,
+    REGEX_PATTERN_COMMIT_LINE,
+    REGEX_PATTERN_TAG,
 )
 
 __author__ = 'Artur Barseghyan'
@@ -86,7 +88,6 @@ def get_logs(between: str = None) -> Dict[str, Any]:
                 upper = rev_list[0]
                 lower = rev_list[-1]
         except GitCommandError as err:
-            import ipdb; ipdb.set_trace()
             pass
 
     # Merges log
@@ -242,7 +243,7 @@ def prepare_changelog(
         try:
             entry = json.loads(json_entry)
         except json.decoder.JSONDecodeError:
-            continue  # TODO: fix this
+            continue  # TODO: fix this (when commit message contains " symbols)
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
@@ -308,7 +309,6 @@ def prepare_changelog(
                             'title': commit_message,
                         }
                     except:
-                        # import ipdb; ipdb.set_trace()
                         # TODO: Anything here?
                         pass
             else:
@@ -340,7 +340,6 @@ def prepare_releases_changelog(
     releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
     releases_tree = {tag: generate_empty_tree() for tag in releases}
 
-    # import ipdb; ipdb.set_trace()
     cur_branch = None
     cur_branch_type = None
     branch_types = {}
@@ -388,14 +387,12 @@ def prepare_releases_changelog(
                 }
             branch_types.update({ticket_number: branch_type})
 
-    # import ipdb; ipdb.set_trace()
-
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
         try:
             entry = json.loads(json_entry)
         except json.decoder.JSONDecodeError:
-            continue  # TODO: fix this
+            continue  # TODO: fix this (when commit message contains " symbols)
 
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
@@ -464,7 +461,6 @@ def prepare_releases_changelog(
                             'title': commit_message,
                         }
                     except:
-                        # import ipdb; ipdb.set_trace()
                         # TODO: Anything here?
                         pass
             else:
@@ -628,7 +624,6 @@ def generate_changelog_cli() -> Type[None]:
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
                     if branch_type != BRANCH_TYPE_OTHER:
-                        # import ipdb; ipdb.set_trace()
                         changelog.append(
                             "\n*{} {}*\n".format(ticket_number,
                                                  ticket_data['title'])
@@ -647,9 +642,19 @@ def generate_changelog_cli() -> Type[None]:
     return '\n'.join(changelog)
 
 
-def create_default_config_file():
-    """Create default config file.
+def create_config_file() -> bool:
+    """Create config file.
 
     :return:
     """
-    pass
+    source_filename = project_dir('.matyan.ini')
+    dest_filename = os.path.join(os.getcwd(), '.matyan.ini')
+    try:
+        copyfile(source_filename, dest_filename)
+        return True
+    except Exception as err:
+        return False
+
+
+def create_config_file_cli():
+    return not create_config_file()

@@ -11,3 +11,4 @@ TODOS
 + Add output to file. Documented how to write to file instead.
 - Add tests.
 - Make it possible to provide a template for generated changelog file.
+- Create initial config file.

@@ -22,7 +22,7 @@ setup(
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 3 - Alpha",
         "Topic :: Internet",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or "
@@ -42,6 +42,7 @@ setup(
             # Backups
             'matyan-json-changelog = matyan.utils:json_changelog_cli',
             'matyan-generate-changelog = matyan.utils:generate_changelog_cli',
+            'matyan-create-config = matyan.utils:create_config_file_cli',
         ]
     },
     include_package_data=True,
