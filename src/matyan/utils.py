@@ -239,7 +239,10 @@ def prepare_changelog(
 
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
-        entry = json.loads(json_entry)
+        try:
+            entry = json.loads(json_entry)
+        except json.decoder.JSONDecodeError:
+            continue  # TODO: fix this
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
@@ -389,7 +392,11 @@ def prepare_releases_changelog(
 
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
-        entry = json.loads(json_entry)
+        try:
+            entry = json.loads(json_entry)
+        except json.decoder.JSONDecodeError:
+            continue  # TODO: fix this
+
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
