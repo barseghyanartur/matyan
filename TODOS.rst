@@ -12,3 +12,4 @@ TODOS
 - Add tests.
 - Make it possible to provide a template for generated changelog file.
 - Create initial config file.
+- Add a command for generating the changelog for latest release.
