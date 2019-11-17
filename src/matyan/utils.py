@@ -33,7 +33,7 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
-    'create_default_config_file',
+    'create_config_file',
     'generate_changelog_cli',
     'generate_empty_tree',
     'get_branch_type',
@@ -533,7 +533,7 @@ def json_changelog_cli() -> Type[None]:
     # pprint(tree)
 
 
-def generate_changelog_cli() -> Type[None]:
+def generate_changelog() -> str:
     """Generate changelog (markdown format)."""
     parser = argparse.ArgumentParser(description='Generate changelog')
     parser.add_argument(
@@ -640,6 +640,10 @@ def generate_changelog_cli() -> Type[None]:
                         )
 
     return '\n'.join(changelog)
+
+
+def generate_changelog_cli() -> Type[None]:
+    print(generate_changelog())
 
 
 def create_config_file() -> bool:

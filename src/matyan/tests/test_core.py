@@ -5,10 +5,8 @@ import logging
 import os
 import unittest
 
-import six
-from six.moves.urllib.parse import urlsplit
 from ..utils import (
-    create_default_config_file,
+    create_config_file,
     generate_changelog_cli,
     generate_empty_tree,
     get_branch_type,
@@ -40,14 +38,6 @@ class TestCore(unittest.TestCase):
     def tearDown(self):
         """Tear down."""
         # TODO
-
-    @property
-    def good_url(self):
-        return self.good_patterns[0]['url']
-
-    @property
-    def bad_url(self):
-        return list(self.bad_patterns.keys())[0]
 
     @internet_available_only
     @log_info
