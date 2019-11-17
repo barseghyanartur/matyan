@@ -1,0 +1,7 @@
+-r base.txt
+-r build.txt
+-r code_style.txt
+-r debug.txt
+-r docs.txt
+-r release.txt
+-r test.txt

@@ -110,3 +110,5 @@ venv.bak/
 # Project specific
 changelog.md
 codebin/
+builddocs/
+builddocs.zip

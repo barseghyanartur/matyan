@@ -314,3 +314,22 @@ For any issues contact me at the e-mail given in the `Author`_ section.
 Author
 ======
 Artur Barseghyan <artur.barseghyan@gmail.com>
+
+Docs
+====
+
+Contents:
+
+.. toctree::
+   :maxdepth: 20
+
+   index
+   changelog
+   matyan
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
