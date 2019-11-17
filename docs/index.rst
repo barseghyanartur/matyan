@@ -3,24 +3,24 @@ Matyan
 ======
 Generate changelog from Git commits.
 
-.. image:: https://img.shields.io/pypi/v/jira-git-changelog.svg
-   :target: https://pypi.python.org/pypi/jira-git-changelog
+.. image:: https://img.shields.io/pypi/v/matyan.svg
+   :target: https://pypi.python.org/pypi/matyan
    :alt: PyPI Version
 
-.. image:: https://img.shields.io/pypi/pyversions/jira-git-changelog.svg
-    :target: https://pypi.python.org/pypi/jira-git-changelog/
+.. image:: https://img.shields.io/pypi/pyversions/matyan.svg
+    :target: https://pypi.python.org/pypi/matyan/
     :alt: Supported Python versions
 
-.. image:: https://img.shields.io/travis/barseghyanartur/jira-git-changelog/master.svg
-   :target: http://travis-ci.org/barseghyanartur/jira-git-changelog
+.. image:: https://img.shields.io/travis/barseghyanartur/matyan/master.svg
+   :target: http://travis-ci.org/barseghyanartur/matyan
    :alt: Build Status
 
 .. image:: https://img.shields.io/badge/license-GPL--2.0--only%20OR%20LGPL--2.1--or--later-blue.svg
-   :target: https://github.com/barseghyanartur/jira-git-changelog/#License
+   :target: https://github.com/barseghyanartur/matyan/#License
    :alt: MPL-1.1 OR GPL-2.0-only OR LGPL-2.1-or-later
 
-.. image:: https://coveralls.io/repos/github/barseghyanartur/jira-git-changelog/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/barseghyanartur/jira-git-changelog?branch=master
+.. image:: https://coveralls.io/repos/github/barseghyanartur/matyan/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/barseghyanartur/matyan?branch=master
     :alt: Coverage
 
 Prerequisites
