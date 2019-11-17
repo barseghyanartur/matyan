@@ -1,0 +1,5 @@
+[run]
+omit =
+    codebin/*
+    src/jira_git_changelog/tests/*
+    .tox/*
