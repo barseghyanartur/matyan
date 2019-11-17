@@ -49,10 +49,6 @@ If the following applies to you, ``matyan`` could help:
 
 Sample use-case
 ---------------
-This is just an example project to work with `gitchangelog`. Totally useless
-except for being a use-case to serve. See the outstanding issue
-`Use branch name for section categorisation <https://github.com/vaab/gitchangelog/issues/127>`_.
-
 The use-case
 ~~~~~~~~~~~~
 - JIRA is used for issues.
