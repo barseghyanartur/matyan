@@ -1,2 +1,3 @@
+-r base.txt
 -r code_style.txt
 -r test.txt

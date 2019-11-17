@@ -1,4 +1,1 @@
--r code_style.txt
--r debug.txt
--r test.txt
-
+GitPython>=3.0.0

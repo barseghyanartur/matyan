@@ -8,9 +8,8 @@ import git
 from ..helpers import project_dir
 from .base import log_info, internet_available_only, is_internet_available
 
-__title__ = 'matyan.tests.test_commands'
 __author__ = 'Artur Barseghyan'
-__copyright__ = '2013-2019 Artur Barseghyan'
+__copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL 2.0/LGPL 2.1'
 __all__ = ('TestCommands',)
 

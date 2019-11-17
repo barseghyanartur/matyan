@@ -6,7 +6,7 @@ try:
 except:
     readme = ''
 
-version = '0.0.2'
+version = '0.1'
 
 setup(
     name='matyan',
@@ -22,13 +22,13 @@ setup(
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Topic :: Internet",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or "
         "later (LGPLv2+)",
     ],
-    keywords='Changelog, Git, feature branches, gitflow, JIRA, agile, python',
+    keywords='Changelog, logbook, Git, feature branches, gitflow, JIRA, agile',
     author='Artur Barseghyan',
     author_email='artur.barseghyan@gmail.com',
     url='https://github.com/barseghyanartur/matyan',
@@ -39,10 +39,11 @@ setup(
             # Standard
             'json-changelog = matyan.utils:json_changelog_cli',
             'generate-changelog = matyan.utils:generate_changelog_cli',
+            # Specific
+            'matyan-create-config = matyan.utils:create_config_file_cli',
             # Backups
             'matyan-json-changelog = matyan.utils:json_changelog_cli',
             'matyan-generate-changelog = matyan.utils:generate_changelog_cli',
-            'matyan-create-config = matyan.utils:create_config_file_cli',
         ]
     },
     include_package_data=True,

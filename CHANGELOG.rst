@@ -15,19 +15,27 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
-0.3
+0.1
 ---
+2019-11-18
+
+.. note::
+
+    Release dedicated to my mother, who turned 70 yesterday.
+
+- Status changed to beta.
+- Minor fixes.
+- Add `matyan-create-config` command.
+- Add initial tests.
+
+0.0.2
+-----
 2019-11-17
 
 - Minor fixes.
-- Add `matyan-create-config` command.
 
-0.2
----
+0.0.1
+-----
 2019-11-17
 
-0.1
----
-2019-11-17
-
-- Initial release.
+- Initial alpha release.
