@@ -67,6 +67,16 @@ Sample commits
 ~~~~~~~~~~~~~~
 Consider the following commits into the dev branch:
 
+*branch: bugfix/MSFT-1240-LinkedIn-authentication-failing*
+
+- MSFT-1240 Fix package configuration.
+- MSFT-1240 Update authentication pipeline.
+
+*branch: deprecation/MSFT-1239-Deprecate-Python2*
+
+- MSFT-1239 Deprecate Python2.
+- MSFT-1238 Add initial MyPY setup.
+
 *branch: feature/MSFT-1238-Token-authentication*
 
 - MSFT-1238 Implement token authentication.
@@ -105,6 +115,10 @@ Releases have been made in the following way:
 *0.2*
 
 - Merged issues MSFT-1237 and MSFT-1238
+
+*Yet unreleased features/branches*
+
+- MSFT-1239 and
 
 Sample changelog output
 -----------------------

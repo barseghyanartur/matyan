@@ -490,7 +490,6 @@ def json_changelog_cli() -> Type[None]:
     parser.add_argument(
         'between',
         nargs='?',
-        dest="between",
         default=None,
         help="Range, might be tag or a commit or a branch.",
     )

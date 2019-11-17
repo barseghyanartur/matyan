@@ -27,7 +27,7 @@ def get_branch_types_for_regex() -> str:
                 the_rest=branch_key[1:]
             )
         )
-        return r'|'.join(branches_regex_list)
+    return r'|'.join(branches_regex_list)
 
 
 REGEX_PATTERN_BRANCH_TYPE = r'(((?P<branch_type>{branch_types}))\/)?'.format(
