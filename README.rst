@@ -191,7 +191,7 @@ Write to file
 Documentation
 =============
 Documentation is available on `Read the Docs
-<http://jira-git-changelog.readthedocs.io/>`_.
+<http://matyan.readthedocs.io/>`_.
 
 Installation
 ============
