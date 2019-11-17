@@ -29,7 +29,8 @@ class TestCommands(unittest.TestCase):
             if not os.path.exists(test_dir):
                 git.Repo.clone_from(
                     "git@bitbucket.org:barseghyanartur/matyan-testing.git",
-                    test_dir
+                    test_dir,
+                    StrictHostKeyChecking=False
                 )
 
             # Go to cloned repository

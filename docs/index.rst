@@ -25,7 +25,7 @@ Generate changelog from Git commits.
 
 Prerequisites
 =============
-- Python 3.6, 3.7, 3.8 and PyPy
+- Python 3.6, 3.7 and 3.8
 
 Documentation
 =============
