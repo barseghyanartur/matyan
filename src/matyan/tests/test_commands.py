@@ -28,7 +28,7 @@ class TestCommands(unittest.TestCase):
             test_dir = project_dir("tests/matyan-testing")
             if not os.path.exists(test_dir):
                 git.Repo.clone_from(
-                    "git@bitbucket.org:barseghyanartur/matyan-testing.git",
+                    "https://barseghyanartur@bitbucket.org/barseghyanartur/matyan-testing.git",  # NOQA
                     test_dir,
                     StrictHostKeyChecking=False
                 )
