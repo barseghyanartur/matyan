@@ -152,7 +152,7 @@ The generated change log would look as follows:
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your
-project directory, form which you will be runnin the ``generate-changelog``
+project directory, form which you will be running the ``generate-changelog``
 command.
 
 Sample configuration:
