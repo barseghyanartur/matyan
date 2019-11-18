@@ -21,7 +21,11 @@ from ..patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
 )
 
-from .base import internet_available_only, log_info
+from .base import (
+    internet_available_only,
+    log_info,
+    internet_available_or_is_travis_only,
+)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'

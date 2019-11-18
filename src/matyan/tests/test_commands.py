@@ -6,7 +6,13 @@ import subprocess
 import git
 
 from ..helpers import project_dir
-from .base import log_info, internet_available_only, is_internet_available
+from .base import (
+    log_info,
+    internet_available_only,
+    is_internet_available,
+    internet_available_or_is_travis_only,
+    is_travis,
+)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -23,7 +29,7 @@ class TestCommands(unittest.TestCase):
     def setUpClass(cls):
         """Set up."""
         super(TestCommands, cls).setUpClass()
-        if is_internet_available():
+        if is_internet_available() or is_travis():
             # Test directory for cloning the repo
             test_dir = project_dir("tests/matyan-testing")
             if not os.path.exists(test_dir):
@@ -51,7 +57,7 @@ class TestCommands(unittest.TestCase):
             with open(changelog_releases_output, 'r') as file:
                 cls.changelog_releases_output = file.read().strip()
 
-    @internet_available_only
+    @internet_available_or_is_travis_only
     @log_info
     def test_01_generate_changelog_command(self):
         """Test generate changelog command."""
@@ -61,7 +67,7 @@ class TestCommands(unittest.TestCase):
         self.assertEqual(res, self.changelog_output)
         return res
 
-    @internet_available_only
+    @internet_available_or_is_travis_only
     @log_info
     def test_02_generate_changelog_command_show_releases(self):
         """Test generate changelog command."""
