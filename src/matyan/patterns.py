@@ -4,11 +4,11 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
-    'REGEX_PATTERN_BRANCH_TYPE',
     'REGEX_PATTERN_BRANCH_NAME',
-    'REGEX_PATTERN_MERGED_BRANCH_NAME',
+    'REGEX_PATTERN_BRANCH_TYPE',
     'REGEX_PATTERN_COMMIT',
     'REGEX_PATTERN_COMMIT_LINE',
+    'REGEX_PATTERN_MERGED_BRANCH_NAME',
     'REGEX_PATTERN_TAG',
 )
 
@@ -47,5 +47,6 @@ REGEX_PATTERN_COMMIT = r'(?P<ticket_number>[a-zA-Z]{1,7}-\d{4,6})?'
 REGEX_PATTERN_COMMIT_LINE = r'(\s*)' + \
                             REGEX_PATTERN_COMMIT + \
                             r'\s?(?P<commit_message>.*)'
+
 
 REGEX_PATTERN_TAG = r'(?P<tag>((\d{1,9}\.)+(\d)+))'

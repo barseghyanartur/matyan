@@ -6,14 +6,15 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
-    'get_branch_types',
-    'get_other_branch_type',
     'get_all_branch_types',
-    'get_unreleased',
+    'get_branch_types',
+    'get_ignore_commits_exact_words',
+    'get_ignore_commits_prefixes',
+    'get_other_branch_type',
     'get_other_branch_type_key',
+    'get_unreleased',
     'get_unreleased_key',
     'get_unreleased_key_label',
-    'get_ignore_commits_exact_words',
 )
 
 
@@ -75,3 +76,11 @@ def get_ignore_commits_exact_words() -> List[str]:
     :return:
     """
     return CONFIG['IgnoreCommits']['exact'].split('\n')
+
+
+def get_ignore_commits_prefixes() -> List[str]:
+    """Get ignore commits prefixes.
+
+    :return:
+    """
+    return CONFIG['IgnoreCommits']['prefix'].split('\n')

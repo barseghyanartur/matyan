@@ -12,20 +12,21 @@ from git.exc import GitCommandError
 
 from .labels import (
     get_all_branch_types,
-    get_other_branch_type,
     get_branch_types,
-    get_unreleased,
+    get_ignore_commits_exact_words,
+    get_ignore_commits_prefixes,
+    get_other_branch_type,
     get_other_branch_type_key,
+    get_unreleased,
     get_unreleased_key,
     get_unreleased_key_label,
-    get_ignore_commits_exact_words,
 )
 from .helpers import project_dir
 from .patterns import (
     REGEX_PATTERN_BRANCH_NAME,
-    REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_COMMIT,
     REGEX_PATTERN_COMMIT_LINE,
+    REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
 
@@ -292,6 +293,10 @@ def prepare_changelog(
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
+            for ignore_prefix in get_ignore_commits_prefixes():
+                if commit_message.lower().startswith(ignore_prefix):
+                    continue
+
             commit_hash = commit_message \
                 if unique_commit_messages \
                 else entry['commit_hash']
@@ -479,6 +484,10 @@ def prepare_releases_changelog(
             # Ignore the following messages
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
+
+            for ignore_prefix in get_ignore_commits_prefixes():
+                if commit_message.lower().startswith(ignore_prefix):
+                    continue
 
             commit_hash = commit_message \
                 if unique_commit_messages \
