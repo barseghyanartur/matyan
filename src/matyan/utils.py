@@ -200,7 +200,10 @@ def prepare_changelog(
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
-        entry = json.loads(json_entry)
+        try:
+            entry = json.loads(json_entry)
+        except json.decoder.JSONDecodeError:
+            continue  # TODO: fix this (when commit message contains " symbols)
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
@@ -346,7 +349,10 @@ def prepare_releases_changelog(
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
-        entry = json.loads(json_entry)
+        try:
+            entry = json.loads(json_entry)
+        except json.decoder.JSONDecodeError:
+            continue  # TODO: fix this (when commit message contains " symbols)
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
