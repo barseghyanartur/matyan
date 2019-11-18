@@ -1,8 +1,3 @@
-### Unreleased
-
-**Other**
-
-
 ### 0.2
 
 **Feature**
@@ -16,17 +11,7 @@
 
 - Improve document sharing. Add option to share via GDrive [Artur Barseghyan]
 
-**Other**
-
-
 ### 0.1
-
-**Feature**
-
-*MSFT-1234 Car Type Suggester*
-
-- Add insurance amount indication based on car weight [Artur Barseghyan]
-- Initial car type suggester implementation [Artur Barseghyan]
 
 **Bugfix**
 
@@ -43,4 +28,9 @@
 - Update docs [Artur Barseghyan]
 - Deprecate API v 2.0 [Artur Barseghyan]
 
-**Other**
+**Feature**
+
+*MSFT-1234 Car Type Suggester*
+
+- Add insurance amount indication based on car weight [Artur Barseghyan]
+- Initial car type suggester implementation [Artur Barseghyan]

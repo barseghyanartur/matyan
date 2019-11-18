@@ -28,5 +28,3 @@
 
 - Update docs [Artur Barseghyan]
 - Deprecate API v 2.0 [Artur Barseghyan]
-
-**Other**

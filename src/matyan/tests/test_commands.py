@@ -25,6 +25,8 @@ LOGGER = logging.getLogger(__name__)
 class TestCommands(unittest.TestCase):
     """Matyan commands tests."""
 
+    maxDiff = None
+
     @classmethod
     def setUpClass(cls):
         """Set up."""
@@ -62,7 +64,8 @@ class TestCommands(unittest.TestCase):
     def test_01_generate_changelog_command(self):
         """Test generate changelog command."""
         res = subprocess.check_output([
-            'generate-changelog'
+            'generate-changelog',
+            '--no-other'
         ]).strip().decode()
         self.assertEqual(res, self.changelog_output)
         return res
@@ -73,7 +76,8 @@ class TestCommands(unittest.TestCase):
         """Test generate changelog command."""
         res = subprocess.check_output([
             'generate-changelog',
-            '--show-releases'
+            '--show-releases',
+            '--no-other'
         ]).strip().decode()
         self.assertEqual(res, self.changelog_releases_output)
         return res
