@@ -98,6 +98,12 @@ version 0.0.3.
 
     generate-changelog master..dev --show-releases
 
+**Generate changelog for the latest release with releases info shown**
+
+.. code-block:: sh
+
+    generate-changelog --latest-release --show-releases
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your
@@ -130,6 +136,9 @@ Sample configuration:
            more on
            wip
            commit
+    prefix: more on
+            continue on
+
 
 Tips and tricks
 ===============
@@ -217,6 +226,7 @@ Contents:
 
    index
    basic_concepts
+   methodology
    changelog
    matyan
 

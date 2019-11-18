@@ -15,6 +15,16 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.2
+---
+2019-11-19
+
+- Hide empty sections/records.
+- Add an option to generate changelog for latest release only.
+- Handle multiple merge format commit messages.
+- Prevent JSON decoding errors.
+- Exclude tests from coverage.
+
 0.1
 ---
 2019-11-18
