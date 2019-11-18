@@ -1,5 +1,5 @@
 [run]
 omit =
     codebin/*
-    src/matyan/tests/*
-    .tox/*
+    *src/matyan/tests/*
+    *.tox/*
