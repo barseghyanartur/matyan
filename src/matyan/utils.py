@@ -121,11 +121,17 @@ def get_logs(between: str = None) -> Dict[str, Any]:
     log = text_log.split("\n")
 
     # Tags log
-    text_log_tags = REPOSITORY.log(
+    text_log_tags_args = []
+    # if lower and upper:
+    #     text_log_tags_args.append(
+    #         "{}..{}".format(lower, upper)
+    #     )
+    text_log_tags_args.extend([
         "--tags",
         "--source",
         "--oneline"
-    )
+    ])
+    text_log_tags = REPOSITORY.log(*text_log_tags_args)
     log_tags = text_log_tags.split("\n")
     commit_tags = dict([s.split(' ', 1)[0].split('\t') for s in log_tags])
 
@@ -190,7 +196,8 @@ def prepare_changelog(
     :param unique_commit_messages:
     :return:
     """
-    tree = generate_empty_tree()
+    # tree = generate_empty_tree()
+    tree = {}
 
     cur_branch = None
     cur_branch_type = None
@@ -228,6 +235,10 @@ def prepare_changelog(
 
             # For normal tree
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
+
+            if branch_type not in tree:
+                tree[branch_type] = {}
+
             if ticket_number not in tree[branch_type]:
                 tree[branch_type][ticket_number] = {
                     'commit_hash': entry['commit_hash'],
@@ -288,6 +299,16 @@ def prepare_changelog(
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
 
             if cur_branch:
+
+                if cur_branch_type not in tree:
+                    tree[cur_branch_type] = {}
+
+                if cur_branch not in tree[cur_branch_type]:
+                    tree[cur_branch_type][cur_branch] = {}
+
+                if 'commits' not in tree[cur_branch_type][cur_branch]:
+                    tree[cur_branch_type][cur_branch]['commits'] = {}
+
                 if cur_branch == ticket_number:
                     tree[cur_branch_type][cur_branch]['commits'][commit_hash] = {  # NOQA
                         'commit_hash': entry['commit_hash'],
@@ -303,6 +324,15 @@ def prepare_changelog(
                         BRANCH_TYPE_OTHER
                     )
                     try:
+                        if other_branch_type not in tree:
+                            tree[other_branch_type] = {}
+
+                        if ticket_number not in tree[other_branch_type]:
+                            tree[other_branch_type][ticket_number] = {}
+
+                        if 'commits' not in tree[other_branch_type][ticket_number]:
+                            tree[other_branch_type][ticket_number]['commits'] = {}
+
                         tree[other_branch_type][ticket_number]['commits'][commit_hash] = {  # NOQA
                             'commit_hash': entry['commit_hash'],
                             'commit_abbr': entry['commit_abbr'],
@@ -315,6 +345,15 @@ def prepare_changelog(
                         # TODO: Anything here?
                         pass
             else:
+                if BRANCH_TYPE_OTHER not in tree:
+                    tree[BRANCH_TYPE_OTHER] = {}
+
+                if TICKET_NUMBER_OTHER not in tree[BRANCH_TYPE_OTHER]:
+                    tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {}
+
+                if 'commits' not in tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]:
+                    tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'] = {}
+
                 tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'][commit_hash] = {  # NOQA
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
@@ -341,7 +380,8 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between)
     releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
-    releases_tree = {tag: generate_empty_tree() for tag in releases}
+    # releases_tree = {tag: generate_empty_tree() for tag in releases}
+    releases_tree = {}
 
     cur_branch = None
     cur_branch_type = None
@@ -379,6 +419,12 @@ def prepare_releases_changelog(
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
             if not release:
                 release = UNRELEASED
+
+            if release not in releases_tree:
+                releases_tree[release] = {}
+
+            if branch_type not in releases_tree[release]:
+                releases_tree[release][branch_type] = {}
 
             if ticket_number not in releases_tree[release][branch_type]:
                 releases_tree[release][branch_type][ticket_number] = {
@@ -443,6 +489,19 @@ def prepare_releases_changelog(
                 release = UNRELEASED
 
             if cur_branch:
+
+                if release not in releases_tree:
+                    releases_tree[release] = {}
+
+                if cur_branch_type not in releases_tree[release]:
+                    releases_tree[release][cur_branch_type] = {}
+
+                if cur_branch not in releases_tree[release][cur_branch_type]:
+                    releases_tree[release][cur_branch_type][cur_branch] = {}
+
+                if 'commits' not in releases_tree[release][cur_branch_type][cur_branch]:
+                    releases_tree[release][cur_branch_type][cur_branch]['commits'] = {}
+
                 if cur_branch == ticket_number:
                     releases_tree[release][cur_branch_type][cur_branch]['commits'][commit_hash] = {  # NOQA
                         'commit_hash': entry['commit_hash'],
@@ -458,6 +517,18 @@ def prepare_releases_changelog(
                         BRANCH_TYPE_OTHER
                     )
                     try:
+                        if release not in releases_tree:
+                            releases_tree[release] = {}
+
+                        if other_branch_type not in releases_tree[release]:
+                            releases_tree[release][other_branch_type] = {}
+
+                        if ticket_number not in releases_tree[release][other_branch_type]:
+                            releases_tree[release][other_branch_type][ticket_number] = {}
+
+                        if 'commits' not in releases_tree[release][other_branch_type][ticket_number]:
+                            releases_tree[release][other_branch_type][ticket_number]['commits'] = {}
+
                         releases_tree[release][other_branch_type][ticket_number]['commits'][commit_hash] = {  # NOQA
                             'commit_hash': entry['commit_hash'],
                             'commit_abbr': entry['commit_abbr'],
@@ -470,6 +541,18 @@ def prepare_releases_changelog(
                         # TODO: Anything here?
                         pass
             else:
+                if release not in releases_tree:
+                    releases_tree[release] = {}
+
+                if BRANCH_TYPE_OTHER not in releases_tree[release]:
+                    releases_tree[release][BRANCH_TYPE_OTHER] = {}
+
+                if TICKET_NUMBER_OTHER not in releases_tree[release][BRANCH_TYPE_OTHER]:
+                    releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {}
+
+                if 'commits' not in releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]:
+                    releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'] = {}
+
                 releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'][commit_hash] = {  # NOQA
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
@@ -542,10 +625,24 @@ def json_changelog_cli() -> Type[None]:
         action='store_true',
         help="Show releases",
     )
+    parser.add_argument(
+        '--latest-release',
+        dest="latest_release",
+        default=False,
+        action='store_true',
+        help="Generate changelog for the latest release only",
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
+    latest_release = args.latest_release
+
+    if latest_release:
+        latest_two_releases = get_latest_releases(limit=2)
+        latest_two_releases = latest_two_releases[::-1]
+        if len(latest_two_releases):
+            between = '..'.join(latest_two_releases)
 
     if not show_releases:
         tree = prepare_changelog(
@@ -589,8 +686,8 @@ def generate_changelog() -> str:
         help="Show releases",
     )
     parser.add_argument(
-        '--show-latest-release',
-        dest="show_latest_release",
+        '--latest-release',
+        dest="latest_release",
         default=False,
         action='store_true',
         help="Generate changelog for the latest release only",
@@ -599,13 +696,13 @@ def generate_changelog() -> str:
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
-    show_latest_release = args.show_latest_release
+    latest_release = args.latest_release
     # if show_latest_release and between:
     #     raise Exception(
     #         "--show-latest-release can't be used in combination with specific"
     #         "tags/commits/branches range."
     #     )
-    if show_latest_release:
+    if latest_release:
         latest_two_releases = get_latest_releases(limit=2)
         latest_two_releases = latest_two_releases[::-1]
         if len(latest_two_releases):
@@ -658,6 +755,7 @@ def generate_changelog() -> str:
                 if release == UNRELEASED \
                 else release
 
+            # import ipdb; ipdb.set_trace()
             changelog.append("\n### {}".format(release_label))
             for branch_type, tickets in branches.items():
                 # Skip adding orphaned commits if explicitly asked not to.
@@ -673,6 +771,10 @@ def generate_changelog() -> str:
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
                     if branch_type != BRANCH_TYPE_OTHER:
+                        try:
+                            ticket_data['title']
+                        except Exception as err:
+                            import ipdb; ipdb.set_trace()
                         changelog.append(
                             "\n*{} {}*\n".format(ticket_number,
                                                  ticket_data['title'])
