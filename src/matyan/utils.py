@@ -493,6 +493,32 @@ def validate_between(between: str = None) -> bool:
     return True
 
 
+def get_latest_release() -> str:
+    """Get latest release.
+
+    Command:
+
+        git describe --match '*.*' --abbr=0
+
+    :return:
+    """
+    return REPOSITORY.describe('--match', '*.*', '--abbr=0')
+
+
+def get_latest_releases(limit: int = 2) -> list:
+    """Get latest <limit> releases.
+
+    Command:
+
+        git tag --sort=-version:refname -l '*.*' | head -n <limit>
+
+    :return:
+    """
+    return REPOSITORY.tag(
+        '--sort=-version:refname', '--list', '*.*'
+    ).split('\n')[:limit]
+
+
 def json_changelog_cli() -> Type[None]:
     """Generate changelog (JSON format)."""
     parser = argparse.ArgumentParser(description='Generate JSON changelog')
@@ -563,17 +589,27 @@ def generate_changelog() -> str:
         help="Show releases",
     )
     parser.add_argument(
-        '--allow-empty-sections',
-        dest="allow_empty_sections",
+        '--show-latest-release',
+        dest="show_latest_release",
         default=False,
         action='store_true',
-        help="Allow empty sections",
+        help="Generate changelog for the latest release only",
     )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
-    allow_empty_sections = args.allow_empty_sections
+    show_latest_release = args.show_latest_release
+    # if show_latest_release and between:
+    #     raise Exception(
+    #         "--show-latest-release can't be used in combination with specific"
+    #         "tags/commits/branches range."
+    #     )
+    if show_latest_release:
+        latest_two_releases = get_latest_releases(limit=2)
+        latest_two_releases = latest_two_releases[::-1]
+        if len(latest_two_releases):
+            between = '..'.join(latest_two_releases)
 
     changelog = []
 
@@ -631,7 +667,8 @@ def generate_changelog() -> str:
                 # Do not add branch type if no related branches found
                 if tickets:
                     changelog.append(
-                        "\n**{}**".format(BRANCH_TYPES.get(branch_type)))
+                        "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                    )
 
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
