@@ -764,7 +764,6 @@ def generate_changelog() -> str:
                 if release == UNRELEASED \
                 else release
 
-            # import ipdb; ipdb.set_trace()
             changelog.append("\n### {}".format(release_label))
             for branch_type, tickets in branches.items():
                 # Skip adding orphaned commits if explicitly asked not to.
@@ -780,10 +779,8 @@ def generate_changelog() -> str:
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
                     if branch_type != BRANCH_TYPE_OTHER:
-                        try:
-                            ticket_data['title']
-                        except Exception as err:
-                            import ipdb; ipdb.set_trace()
+                        if 'title' not in ticket_data:
+                            continue
                         changelog.append(
                             "\n*{} {}*\n".format(ticket_number,
                                                  ticket_data['title'])
