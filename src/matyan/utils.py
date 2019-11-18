@@ -563,16 +563,17 @@ def generate_changelog() -> str:
         help="Show releases",
     )
     parser.add_argument(
-        '--output-file',
-        dest="show_releases",
+        '--allow-empty-sections',
+        dest="allow_empty_sections",
         default=False,
         action='store_true',
-        help="Show releases",
+        help="Allow empty sections",
     )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
+    allow_empty_sections = args.allow_empty_sections
 
     changelog = []
 
@@ -588,13 +589,18 @@ def generate_changelog() -> str:
 
             # Do not add branch type if no related branches found
             if tickets:
-                changelog.append("\n**{}**".format(BRANCH_TYPES.get(branch_type)))
+                changelog.append(
+                    "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                )
 
             # Add tickets
             for ticket_number, ticket_data in tickets.items():
                 if branch_type != BRANCH_TYPE_OTHER:
                     changelog.append(
-                        "\n*{} {}*\n".format(ticket_number, ticket_data['title'])
+                        "\n*{} {}*\n".format(
+                            ticket_number,
+                            ticket_data['title']
+                        )
                     )
                 else:
                     changelog.append('')
