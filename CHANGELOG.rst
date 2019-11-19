@@ -24,6 +24,7 @@ are used for versioning (schema follows below):
 - ``matyan-create-config`` command renamed to ``matyan-make-config``.
 - Next to the commands, functions are tested as well.
 - Fix issue with lower edge nog being included when using dotted range.
+- Added more tests.
 
 0.2.1
 -----

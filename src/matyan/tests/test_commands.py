@@ -61,6 +61,48 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         )
         return res
 
+    @log_info
+    def test_04_json_changelog_command(self):
+        """Test json changelog command."""
+        res = subprocess.check_output([
+            'json-changelog'
+        ]).strip().decode()
+        self.assertEqual(res, self.json_output)
+        return res
+
+    @log_info
+    def test_05_json_changelog_command_show_releases(self):
+        """Test json changelog command."""
+        res = subprocess.check_output([
+            'json-changelog',
+            '--show-releases'
+        ]).strip().decode()
+        self.assertEqual(res, self.json_show_releases_output)
+        return res
+
+    @log_info
+    def test_06_json_changelog_command_show_latest_release(self):
+        """Test json changelog command."""
+        res = subprocess.check_output([
+            'json-changelog',
+            '--show-releases',
+            '--latest-release'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.json_latest_release_show_releases_output
+        )
+        return res
+
+    @log_info
+    def test_07_make_config_file(self):
+        """Test make config command."""
+        res = subprocess.check_output([
+            'matyan-make-config',
+        ]).strip().decode()
+        self.assertEqual(res, '')
+        return res
+
 
 if __name__ == '__main__':
     unittest.main()

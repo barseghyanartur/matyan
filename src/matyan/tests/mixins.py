@@ -30,6 +30,8 @@ class ChangelogMixin:
         # Go to cloned repository
         os.chdir(cls.test_dir)
 
+        # ************************** Markdown *******************************
+
         # Expected output of the `generate-changelog` command.
         changelog_output = project_dir(
             'tests/output/generate-changelog.md'
@@ -40,7 +42,7 @@ class ChangelogMixin:
         # Expected output of the `generate-changelog --show-releases`
         # command.
         changelog_releases_output = project_dir(
-            'tests/output/generate-changelog-releases.md'
+            'tests/output/generate-changelog-show-releases.md'
         )
         with open(changelog_releases_output, 'r') as file:
             cls.changelog_releases_output = file.read().strip()
@@ -53,4 +55,31 @@ class ChangelogMixin:
         )
         with open(changelog_latest_release_show_releases_output, 'r') as file:
             cls.changelog_latest_release_show_releases_output \
+                = file.read().strip()
+
+        # **************************** JSON *******************************
+
+        # Expected output of the `json-changelog` command.
+        json_output = project_dir(
+            'tests/output/json-changelog.json'
+        )
+        with open(json_output, 'r') as file:
+            cls.json_output = file.read().strip()
+
+        # Expected output of the `json-changelog --show-releases`
+        # command.
+        json_show_releases_output = project_dir(
+            'tests/output/json-changelog-show-releases.json'
+        )
+        with open(json_show_releases_output, 'r') as file:
+            cls.json_show_releases_output = file.read().strip()
+
+        # Expected output of the
+        # `json-changelog --show-releases --latest-release`
+        # command.
+        json_latest_release_show_releases_output = project_dir(
+            'tests/output/json-changelog-latest-release-show-releases.json'
+        )
+        with open(json_latest_release_show_releases_output, 'r') as file:
+            cls.json_latest_release_show_releases_output \
                 = file.read().strip()

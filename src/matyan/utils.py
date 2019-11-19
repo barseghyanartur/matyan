@@ -600,17 +600,17 @@ def validate_between(between: str = None) -> bool:
     return True
 
 
-def get_latest_release(path: str = None) -> str:
-    """Get latest release.
-
-    Command:
-
-        git describe --match '*.*' --abbr=0
-
-    :return:
-    """
-    repository = get_repository(path)
-    return repository.describe('--match', '*.*', '--abbr=0')
+# def get_latest_release(path: str = None) -> str:
+#     """Get latest release.
+#
+#     Command:
+#
+#         git describe --match '*.*' --abbr=0
+#
+#     :return:
+#     """
+#     repository = get_repository(path)
+#     return repository.describe('--match', '*.*', '--abbr=0')
 
 
 def get_latest_releases(limit: int = 2, path: str = None) -> list:

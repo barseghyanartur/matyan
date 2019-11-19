@@ -1,3 +1,4 @@
+import json
 import re
 import logging
 import unittest
@@ -74,7 +75,50 @@ class TestCore(unittest.TestCase, ChangelogMixin):
         return res
 
     @log_info
-    def test_04_merge_branch_patterns(self):
+    def test_04_json_changelog(self):
+        """Test JSON changelog."""
+        res = json_changelog(
+            include_other=False,
+            path=self.test_dir
+        )
+        self.assertEqual(str(res), self.json_output)
+        return res
+
+    @log_info
+    def test_05_json_changelog_show_releases(self):
+        """Test json changelog."""
+        res = json_changelog(
+            include_other=False,
+            show_releases=True,
+            path=self.test_dir
+        )
+        self.assertEqual(str(res), self.json_show_releases_output)
+        return res
+
+    @log_info
+    def test_06_json_changelog_latest_release_show_releases(self):
+        """Test json changelog."""
+        res = json_changelog(
+            include_other=False,
+            show_releases=True,
+            latest_release=True,
+            path=self.test_dir
+        )
+        self.assertEqual(
+            str(res),
+            self.json_latest_release_show_releases_output
+        )
+        return res
+
+    @log_info
+    def test_07_make_config_file(self):
+        """Test make config file."""
+        res = make_config_file()
+        self.assertTrue(res)
+        return res
+
+    @log_info
+    def test_08_merge_branch_patterns(self):
         """Test generate changelog."""
         merge_messages = {
             'Merge pull request #1234 in PROJ/repo from bugfix/PROJ-'
