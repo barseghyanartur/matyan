@@ -153,7 +153,7 @@ Create initial config file
 
 .. code-block:: sh
 
-    matyan-create-config
+    matyan-make-config
 
 Testing
 =======
