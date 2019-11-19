@@ -1,16 +1,10 @@
-# -*- coding: utf-8 -*-
-
-import copy
 import re
 import logging
-import os
 import unittest
-from unittest import mock
 
 from ..utils import (
-    create_config_file,
+    make_config_file,
     generate_changelog,
-    generate_empty_tree,
     get_branch_type,
     get_logs,
     json_changelog,
@@ -22,11 +16,7 @@ from ..patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
 )
 
-from .base import (
-    internet_available_only,
-    log_info,
-    internet_available_or_is_travis_only,
-)
+from .base import log_info
 from .mixins import ChangelogMixin
 
 __author__ = 'Artur Barseghyan'
@@ -69,7 +59,22 @@ class TestCore(unittest.TestCase, ChangelogMixin):
         return res
 
     @log_info
-    def test_03_merge_branch_patterns(self):
+    def test_03_generate_changelog_latest_release_show_releases(self):
+        """Test generate changelog."""
+        res = generate_changelog(
+            include_other=False,
+            show_releases=True,
+            latest_release=True,
+            path=self.test_dir
+        ).strip()
+        self.assertEqual(
+            res,
+            self.changelog_latest_release_show_releases_output
+        )
+        return res
+
+    @log_info
+    def test_04_merge_branch_patterns(self):
         """Test generate changelog."""
         merge_messages = {
             'Merge pull request #1234 in PROJ/repo from bugfix/PROJ-'

@@ -6,7 +6,7 @@ try:
 except:
     readme = ''
 
-version = '0.2.1'
+version = '0.3'
 
 setup(
     name='matyan',
@@ -40,7 +40,7 @@ setup(
             'json-changelog = matyan.utils:json_changelog_cli',
             'generate-changelog = matyan.utils:generate_changelog_cli',
             # Specific
-            'matyan-create-config = matyan.utils:create_config_file_cli',
+            'matyan-make-config = matyan.utils:make_config_file_cli',
             # Backups
             'matyan-json-changelog = matyan.utils:json_changelog_cli',
             'matyan-generate-changelog = matyan.utils:generate_changelog_cli',

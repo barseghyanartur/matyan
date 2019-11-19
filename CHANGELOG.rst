@@ -15,6 +15,16 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.3
+---
+2019-11-20
+
+- Most of the functions got optional ``path`` parameter to use as
+  path to the repository directory.
+- ``matyan-create-config`` command renamed to ``matyan-make-config``.
+- Next to the commands, functions are tested as well.
+- Fix issue with lower edge nog being included when using dotted range.
+
 0.2.1
 -----
 2019-11-19

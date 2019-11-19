@@ -44,3 +44,13 @@ class ChangelogMixin:
         )
         with open(changelog_releases_output, 'r') as file:
             cls.changelog_releases_output = file.read().strip()
+
+        # Expected output of the
+        # `generate-changelog --show-releases --latest-release`
+        # command.
+        changelog_latest_release_show_releases_output = project_dir(
+            'tests/output/generate-changelog-latest-release-show-releases.md'
+        )
+        with open(changelog_latest_release_show_releases_output, 'r') as file:
+            cls.changelog_latest_release_show_releases_output \
+                = file.read().strip()

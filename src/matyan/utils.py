@@ -34,16 +34,16 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
-    'create_config_file',
+    'generate_changelog',
     'generate_changelog_cli',
-    'generate_empty_tree',
     'get_branch_type',
     'get_logs',
+    'json_changelog',
     'json_changelog_cli',
+    'make_config_file',
+    'make_config_file_cli',
     'prepare_changelog',
     'prepare_releases_changelog',
-    'generate_changelog',
-    'json_changelog',
     'validate_between',
 )
 
@@ -103,8 +103,9 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     # Merges log
     text_log_merges_args = []
     if lower and upper:
+        # Note, that ~1 addition make sure the lower range is inclusive
         text_log_merges_args.append(
-            "{}..{}".format(lower, upper)
+            "{}~1..{}".format(lower, upper)
         )
     text_log_merges_args.extend([
         "--pretty={}".format(PRETTY_FORMAT),
@@ -118,8 +119,9 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     # Commits log
     text_log_args = []
     if lower and upper:
+        # Note, that ~1 addition make sure the lower range is inclusive
         text_log_args.append(
-            "{}..{}".format(lower, upper)
+            "{}~1..{}".format(lower, upper)
         )
     text_log_args.extend([
         "--pretty={}".format(PRETTY_FORMAT),
@@ -166,32 +168,32 @@ def get_branch_type(branch_type: AnyStr) -> str:
     return branch_type if branch_type in BRANCH_TYPES else BRANCH_TYPE_OTHER
 
 
-def generate_empty_tree() -> Dict[str, dict]:
-    """Generate empty tree.
-
-    Example:
-
-        {
-            'feature': {},
-            'bugfix': {},
-            'hotfix': {},
-            'deprecation': {},
-            'other': {
-                TICKET_NUMBER_OTHER: {
-                    # 'title': '',
-                    'commits': {}
-                }
-            },
-        }
-
-    :return:
-    """
-    empty_tree = {}
-    for key, value in BRANCH_TYPES.items():
-        empty_tree.update({key: {}})
-
-    empty_tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {'commits': {}}
-    return empty_tree
+# def generate_empty_tree() -> Dict[str, dict]:
+#     """Generate empty tree.
+#
+#     Example:
+#
+#         {
+#             'feature': {},
+#             'bugfix': {},
+#             'hotfix': {},
+#             'deprecation': {},
+#             'other': {
+#                 TICKET_NUMBER_OTHER: {
+#                     # 'title': '',
+#                     'commits': {}
+#                 }
+#             },
+#         }
+#
+#     :return:
+#     """
+#     empty_tree = {}
+#     for key, value in BRANCH_TYPES.items():
+#         empty_tree.update({key: {}})
+#
+#     empty_tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {'commits': {}}
+#     return empty_tree
 
 
 def prepare_changelog(
@@ -846,8 +848,8 @@ def generate_changelog_cli() -> Type[None]:
     )
 
 
-def create_config_file() -> bool:
-    """Create (or overwrite) config file.
+def make_config_file() -> bool:
+    """Make (or overwrite) config file.
 
     :return:
     """
@@ -860,5 +862,5 @@ def create_config_file() -> bool:
         return False
 
 
-def create_config_file_cli():
-    return not create_config_file()
+def make_config_file_cli():
+    return not make_config_file()

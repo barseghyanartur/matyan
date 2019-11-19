@@ -1,18 +1,9 @@
-import os
 import logging
 import unittest
 
 import subprocess
-import git
 
-from ..helpers import project_dir
-from .base import (
-    log_info,
-    internet_available_only,
-    is_internet_available,
-    internet_available_or_is_travis_only,
-    is_travis,
-)
+from .base import log_info
 from .mixins import ChangelogMixin
 
 __author__ = 'Artur Barseghyan'
@@ -24,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class TestCommands(unittest.TestCase, ChangelogMixin):
-    """Matyan commands tests."""
+    """Commands tests."""
 
     maxDiff = None
 
@@ -34,7 +25,6 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         super(TestCommands, cls).setUpClass()
         cls.prepare_changelog_data()
 
-    # @internet_available_or_is_travis_only
     @log_info
     def test_01_generate_changelog_command(self):
         """Test generate changelog command."""
@@ -45,7 +35,6 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         self.assertEqual(res, self.changelog_output)
         return res
 
-    # @internet_available_or_is_travis_only
     @log_info
     def test_02_generate_changelog_command_show_releases(self):
         """Test generate changelog command."""
@@ -55,6 +44,21 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
             '--no-other'
         ]).strip().decode()
         self.assertEqual(res, self.changelog_releases_output)
+        return res
+
+    @log_info
+    def test_03_generate_changelog_command_show_latest_release(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output([
+            'generate-changelog',
+            '--show-releases',
+            '--latest-release',
+            '--no-other'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.changelog_latest_release_show_releases_output
+        )
         return res
 
 
