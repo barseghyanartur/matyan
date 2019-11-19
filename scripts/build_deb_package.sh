@@ -15,5 +15,5 @@ fi
 if [[ $version ]]
 then
     python setup.py sdist bdist_wheel
-    py2dsc-deb "dist/jira-git-changelog-$version.tar.gz"
+    py2dsc-deb "dist/matyan-$version.tar.gz"
 fi

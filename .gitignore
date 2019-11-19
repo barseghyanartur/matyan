@@ -116,3 +116,4 @@ builddocs.zip
 !tesing/.gitkeep
 testing/
 matyan-testing/
+deb_dist/
