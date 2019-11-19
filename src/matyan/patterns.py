@@ -40,7 +40,10 @@ REGEX_PATTERN_BRANCH_NAME = REGEX_PATTERN_BRANCH_TYPE + \
     r'(?P<branch_title>[a-zA-Z-\d]*)'
 
 REGEX_PATTERN_MERGED_BRANCH_NAME = r'(\s*)' \
-                                   r'((Merged in )|(Merge pull request.*))' + \
+                                   r'(' \
+                                   r'(Merged in )|' \
+                                   r'(Merge pull request .* from )' \
+                                   r')' + \
                                    REGEX_PATTERN_BRANCH_NAME
 
 REGEX_PATTERN_COMMIT = r'(?P<ticket_number>[a-zA-Z]{1,7}-\d{4,6})?'

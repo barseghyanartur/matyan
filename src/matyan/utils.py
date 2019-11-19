@@ -42,10 +42,10 @@ __all__ = (
     'json_changelog_cli',
     'prepare_changelog',
     'prepare_releases_changelog',
+    'generate_changelog',
+    'json_changelog',
     'validate_between',
 )
-
-REPOSITORY = git.Git(os.getcwd())
 
 PRETTY_FORMAT = '{' \
                 '"commit_hash": "%H", ' \
@@ -73,17 +73,26 @@ UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
 IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()
 
 
-def get_logs(between: str = None) -> Dict[str, Any]:
+def get_repository(path: str = None):
+    if not (path and os.path.exists(path) and os.path.isdir(path)):
+        path = os.getcwd()
+
+    return git.Git(path)
+
+
+def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     """Get lots of logs.
 
     :param between:
+    :param path:
     :return:
     """
+    repository = get_repository(path)
     lower: Union[str, Type[None]] = None
     upper: Union[str, Type[None]] = None
     if between:
         try:
-            rev_list_text = REPOSITORY.rev_list(between)
+            rev_list_text = repository.rev_list(between)
             rev_list = rev_list_text.split('\n')
             if len(rev_list) >= 2:
                 upper = rev_list[0]
@@ -103,7 +112,7 @@ def get_logs(between: str = None) -> Dict[str, Any]:
         # "--all",
         "--merges",
     ])
-    text_log_merges = REPOSITORY.log(*text_log_merges_args)
+    text_log_merges = repository.log(*text_log_merges_args)
     log_merges = text_log_merges.split("\n")
 
     # Commits log
@@ -118,7 +127,7 @@ def get_logs(between: str = None) -> Dict[str, Any]:
         # "--all"  # TODO: remove
     ])
 
-    text_log = REPOSITORY.log(*text_log_args)
+    text_log = repository.log(*text_log_args)
     log = text_log.split("\n")
 
     # Tags log
@@ -132,7 +141,7 @@ def get_logs(between: str = None) -> Dict[str, Any]:
         "--source",
         "--oneline"
     ])
-    text_log_tags = REPOSITORY.log(*text_log_tags_args)
+    text_log_tags = repository.log(*text_log_tags_args)
     log_tags = text_log_tags.split("\n")
     commit_tags = dict([s.split(' ', 1)[0].split('\t') for s in log_tags])
 
@@ -187,7 +196,8 @@ def generate_empty_tree() -> Dict[str, dict]:
 
 def prepare_changelog(
     between: str = None,
-    unique_commit_messages: bool = False
+    unique_commit_messages: bool = False,
+    path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
 ]:
@@ -195,6 +205,7 @@ def prepare_changelog(
 
     :param between:
     :param unique_commit_messages:
+    :param path:
     :return:
     """
     # tree = generate_empty_tree()
@@ -204,7 +215,7 @@ def prepare_changelog(
     cur_branch_type = None
     branch_types = {}
 
-    logs = get_logs(between=between)
+    logs = get_logs(between=between, path=path)
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
@@ -373,7 +384,8 @@ def prepare_changelog(
 
 def prepare_releases_changelog(
     between: str = None,
-    unique_commit_messages: bool = False
+    unique_commit_messages: bool = False,
+    path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
 ]:
@@ -381,9 +393,10 @@ def prepare_releases_changelog(
 
     :param between:
     :param unique_commit_messages:
+    :param path:
     :return:
     """
-    logs = get_logs(between=between)
+    logs = get_logs(between=between, path=path)
     releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
     # releases_tree = {tag: generate_empty_tree() for tag in releases}
     releases_tree = {}
@@ -585,7 +598,7 @@ def validate_between(between: str = None) -> bool:
     return True
 
 
-def get_latest_release() -> str:
+def get_latest_release(path: str = None) -> str:
     """Get latest release.
 
     Command:
@@ -594,10 +607,11 @@ def get_latest_release() -> str:
 
     :return:
     """
-    return REPOSITORY.describe('--match', '*.*', '--abbr=0')
+    repository = get_repository(path)
+    return repository.describe('--match', '*.*', '--abbr=0')
 
 
-def get_latest_releases(limit: int = 2) -> list:
+def get_latest_releases(limit: int = 2, path: str = None) -> list:
     """Get latest <limit> releases.
 
     Command:
@@ -606,9 +620,37 @@ def get_latest_releases(limit: int = 2) -> list:
 
     :return:
     """
-    return REPOSITORY.tag(
+    repository = get_repository(path)
+    return repository.tag(
         '--sort=-version:refname', '--list', '*.*'
     ).split('\n')[:limit]
+
+
+def json_changelog(between: str = None,
+                   include_other: bool = True,
+                   show_releases: bool = False,
+                   latest_release: bool = False,
+                   path: str = None):
+    if latest_release:
+        latest_two_releases = get_latest_releases(limit=2, path=path)
+        latest_two_releases = latest_two_releases[::-1]
+        if len(latest_two_releases):
+            between = '..'.join(latest_two_releases)
+
+    if not show_releases:
+        tree = prepare_changelog(
+            between=between,
+            unique_commit_messages=True,
+            path=path
+        )
+        return tree
+    else:
+        releases_tree = prepare_releases_changelog(
+            between=between,
+            unique_commit_messages=True,
+            path=path
+        )
+        return releases_tree
 
 
 def json_changelog_cli() -> Type[None]:
@@ -647,72 +689,30 @@ def json_changelog_cli() -> Type[None]:
     show_releases = args.show_releases
     latest_release = args.latest_release
 
-    if latest_release:
-        latest_two_releases = get_latest_releases(limit=2)
-        latest_two_releases = latest_two_releases[::-1]
-        if len(latest_two_releases):
-            between = '..'.join(latest_two_releases)
-
-    if not show_releases:
-        tree = prepare_changelog(
+    print(
+        json_changelog(
             between=between,
-            unique_commit_messages=True
+            include_other=include_other,
+            show_releases=show_releases,
+            latest_release=latest_release
         )
-        pprint(tree)
-    else:
-        releases_tree = prepare_releases_changelog(
-            between=between,
-            unique_commit_messages=True
-        )
-        pprint(releases_tree)
-
-    # if not include_other:
-    #     tree.pop(BRANCH_TYPE_OTHER)
-    # pprint(tree)
+    )
 
 
-def generate_changelog() -> str:
+def generate_changelog(between: str = None,
+                       include_other: bool = True,
+                       show_releases: bool = False,
+                       latest_release: bool = False,
+                       path: str = None) -> str:
     """Generate changelog (markdown format)."""
-    parser = argparse.ArgumentParser(description='Generate changelog')
-    parser.add_argument(
-        'between',
-        nargs='?',
-        default=None,
-        help="Range, might be tag or a commit or a branch.",
-    )
-    parser.add_argument(
-        '--no-other',
-        dest="no_other",
-        default=False,
-        action='store_true',
-        help="No `Other` section",
-    )
-    parser.add_argument(
-        '--show-releases',
-        dest="show_releases",
-        default=False,
-        action='store_true',
-        help="Show releases",
-    )
-    parser.add_argument(
-        '--latest-release',
-        dest="latest_release",
-        default=False,
-        action='store_true',
-        help="Generate changelog for the latest release only",
-    )
-    args = parser.parse_args(sys.argv[1:])
-    between = args.between if validate_between(args.between) else None
-    include_other = not args.no_other
-    show_releases = args.show_releases
-    latest_release = args.latest_release
+
     # if show_latest_release and between:
     #     raise Exception(
     #         "--show-latest-release can't be used in combination with specific"
     #         "tags/commits/branches range."
     #     )
     if latest_release:
-        latest_two_releases = get_latest_releases(limit=2)
+        latest_two_releases = get_latest_releases(limit=2, path=path)
         latest_two_releases = latest_two_releases[::-1]
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
@@ -722,7 +722,8 @@ def generate_changelog() -> str:
     if not show_releases:
         tree = prepare_changelog(
             between=between,
-            unique_commit_messages=True
+            unique_commit_messages=True,
+            path=path
         )
         for branch_type, tickets in tree.items():
             # Skip adding orphaned commits if explicitly asked not to.
@@ -757,7 +758,8 @@ def generate_changelog() -> str:
     else:
         releases_tree = prepare_releases_changelog(
             between=between,
-            unique_commit_messages=True
+            unique_commit_messages=True,
+            path=path
         )
         for release, branches in releases_tree.items():
             release_label = UNRELEASED_LABEL \
@@ -800,11 +802,52 @@ def generate_changelog() -> str:
 
 
 def generate_changelog_cli() -> Type[None]:
-    print(generate_changelog())
+    parser = argparse.ArgumentParser(description='Generate changelog')
+    parser.add_argument(
+        'between',
+        nargs='?',
+        default=None,
+        help="Range, might be tag or a commit or a branch.",
+    )
+    parser.add_argument(
+        '--no-other',
+        dest="no_other",
+        default=False,
+        action='store_true',
+        help="No `Other` section",
+    )
+    parser.add_argument(
+        '--show-releases',
+        dest="show_releases",
+        default=False,
+        action='store_true',
+        help="Show releases",
+    )
+    parser.add_argument(
+        '--latest-release',
+        dest="latest_release",
+        default=False,
+        action='store_true',
+        help="Generate changelog for the latest release only",
+    )
+    args = parser.parse_args(sys.argv[1:])
+    between = args.between if validate_between(args.between) else None
+    include_other = not args.no_other
+    show_releases = args.show_releases
+    latest_release = args.latest_release
+
+    print(
+        generate_changelog(
+            between=between,
+            include_other=include_other,
+            show_releases=show_releases,
+            latest_release=latest_release
+        )
+    )
 
 
 def create_config_file() -> bool:
-    """Create config file.
+    """Create (or overwrite) config file.
 
     :return:
     """

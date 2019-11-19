@@ -13,6 +13,7 @@ from .base import (
     internet_available_or_is_travis_only,
     is_travis,
 )
+from .mixins import ChangelogMixin
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -22,7 +23,7 @@ __all__ = ('TestCommands',)
 LOGGER = logging.getLogger(__name__)
 
 
-class TestCommands(unittest.TestCase):
+class TestCommands(unittest.TestCase, ChangelogMixin):
     """Matyan commands tests."""
 
     maxDiff = None
@@ -31,33 +32,7 @@ class TestCommands(unittest.TestCase):
     def setUpClass(cls):
         """Set up."""
         super(TestCommands, cls).setUpClass()
-        # if is_internet_available() or is_travis():
-        # Test directory for cloning the repo
-        test_dir = project_dir("tests/matyan-testing")
-        if not os.path.exists(test_dir):
-            git.Repo.clone_from(
-                "https://barseghyanartur@bitbucket.org/barseghyanartur/matyan-testing.git",  # NOQA
-                test_dir,
-                StrictHostKeyChecking=False
-            )
-
-        # Go to cloned repository
-        os.chdir(test_dir)
-
-        # Expected output of the `generate-changelog` command.
-        changelog_output = project_dir(
-            'tests/output/generate-changelog.md'
-        )
-        with open(changelog_output, 'r') as file:
-            cls.changelog_output = file.read().strip()
-
-        # Expected output of the `generate-changelog --show-releases`
-        # command.
-        changelog_releases_output = project_dir(
-            'tests/output/generate-changelog-releases.md'
-        )
-        with open(changelog_releases_output, 'r') as file:
-            cls.changelog_releases_output = file.read().strip()
+        cls.prepare_changelog_data()
 
     # @internet_available_or_is_travis_only
     @log_info
