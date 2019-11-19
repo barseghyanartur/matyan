@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-pip uninstall jira-git-changelog -y
+pip uninstall matyan -y
 ./scripts/clean_up.sh
