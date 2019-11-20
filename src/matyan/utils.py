@@ -199,6 +199,7 @@ def get_branch_type(branch_type: AnyStr) -> str:
 def prepare_changelog(
     between: str = None,
     unique_commit_messages: bool = False,
+    headings_only: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -207,6 +208,7 @@ def prepare_changelog(
 
     :param between:
     :param unique_commit_messages:
+    :param headings_only:
     :param path:
     :return:
     """
@@ -265,6 +267,9 @@ def prepare_changelog(
                     'release': release,
                 }
             branch_types.update({ticket_number: branch_type})
+
+    if headings_only:
+        return tree
 
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
@@ -387,6 +392,7 @@ def prepare_changelog(
 def prepare_releases_changelog(
     between: str = None,
     unique_commit_messages: bool = False,
+    headings_only: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -395,6 +401,7 @@ def prepare_releases_changelog(
 
     :param between:
     :param unique_commit_messages:
+    :param headings_only:
     :param path:
     :return:
     """
@@ -458,7 +465,10 @@ def prepare_releases_changelog(
                     'release': release,
                 }
             branch_types.update({ticket_number: branch_type})
-
+    
+    if headings_only:
+        return releases_tree
+    
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
         try:
@@ -632,6 +642,7 @@ def json_changelog(between: str = None,
                    include_other: bool = True,
                    show_releases: bool = False,
                    latest_release: bool = False,
+                   headings_only: bool = False,
                    path: str = None):
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
@@ -685,18 +696,27 @@ def json_changelog_cli() -> Type[None]:
         action='store_true',
         help="Generate changelog for the latest release only",
     )
+    parser.add_argument(
+        '--headings-only',
+        dest="headings_only",
+        default=False,
+        action='store_true',
+        help="Generate headings only (no commit messages, only branch titles)",
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
     latest_release = args.latest_release
+    headings_only = args.headings_only
 
     print(
         json_changelog(
             between=between,
             include_other=include_other,
             show_releases=show_releases,
-            latest_release=latest_release
+            latest_release=latest_release,
+            headings_only=headings_only
         )
     )
 
@@ -705,6 +725,7 @@ def generate_changelog(between: str = None,
                        include_other: bool = True,
                        show_releases: bool = False,
                        latest_release: bool = False,
+                       headings_only: bool = False,
                        path: str = None) -> str:
     """Generate changelog (markdown format)."""
 
@@ -725,6 +746,7 @@ def generate_changelog(between: str = None,
         tree = prepare_changelog(
             between=between,
             unique_commit_messages=True,
+            headings_only=headings_only,
             path=path
         )
         for branch_type, tickets in tree.items():
@@ -761,6 +783,7 @@ def generate_changelog(between: str = None,
         releases_tree = prepare_releases_changelog(
             between=between,
             unique_commit_messages=True,
+            headings_only=headings_only,
             path=path
         )
         for release, branches in releases_tree.items():
@@ -832,18 +855,27 @@ def generate_changelog_cli() -> Type[None]:
         action='store_true',
         help="Generate changelog for the latest release only",
     )
+    parser.add_argument(
+        '--headings-only',
+        dest="headings_only",
+        default=False,
+        action='store_true',
+        help="Generate headings only (no commit messages, only branch titles)",
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
     latest_release = args.latest_release
+    headings_only = args.headings_only
 
     print(
         generate_changelog(
             between=between,
             include_other=include_other,
             show_releases=show_releases,
-            latest_release=latest_release
+            latest_release=latest_release,
+            headings_only=headings_only
         )
     )
 
