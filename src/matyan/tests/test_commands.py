@@ -26,28 +26,28 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         cls.prepare_changelog_data()
 
     @log_info
-    def test_01_generate_changelog_command(self):
+    def test_generate_changelog(self):
         """Test generate changelog command."""
         res = subprocess.check_output([
             'generate-changelog',
             '--no-other'
         ]).strip().decode()
-        self.assertEqual(res, self.changelog_output)
+        self.assertEqual(res, self.no_args_out)
         return res
 
     @log_info
-    def test_02_generate_changelog_command_show_releases(self):
+    def test_generate_changelog_show_releases(self):
         """Test generate changelog command."""
         res = subprocess.check_output([
             'generate-changelog',
             '--show-releases',
             '--no-other'
         ]).strip().decode()
-        self.assertEqual(res, self.changelog_releases_output)
+        self.assertEqual(res, self.show_releases_out)
         return res
 
     @log_info
-    def test_03_generate_changelog_command_show_latest_release(self):
+    def test_generate_changelog_show_releases_latest_release(self):
         """Test generate changelog command."""
         res = subprocess.check_output([
             'generate-changelog',
@@ -57,31 +57,60 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         ]).strip().decode()
         self.assertEqual(
             res,
-            self.changelog_latest_release_show_releases_output
+            self.latest_release_show_releases_out
         )
         return res
 
     @log_info
-    def test_04_json_changelog_command(self):
+    def test_generate_changelog_show_releases_headings_only(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output([
+            'generate-changelog',
+            '--show-releases',
+            '--headings-only',
+            '--no-other'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.show_releases_headings_only_out
+        )
+        return res
+
+    @log_info
+    def test_generate_changelog_headings_only(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output([
+            'generate-changelog',
+            '--headings-only',
+            '--no-other'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.headings_only_out
+        )
+        return res
+
+    @log_info
+    def test_json_changelog_command(self):
         """Test json changelog command."""
         res = subprocess.check_output([
             'json-changelog'
         ]).strip().decode()
-        self.assertEqual(res, self.json_output)
+        self.assertEqual(res, self.json_no_args_out)
         return res
 
     @log_info
-    def test_05_json_changelog_command_show_releases(self):
+    def test_json_changelog_command_show_releases(self):
         """Test json changelog command."""
         res = subprocess.check_output([
             'json-changelog',
             '--show-releases'
         ]).strip().decode()
-        self.assertEqual(res, self.json_show_releases_output)
+        self.assertEqual(res, self.json_show_releases_out)
         return res
 
     @log_info
-    def test_06_json_changelog_command_show_latest_release(self):
+    def test_json_changelog_show_releases_latest_release(self):
         """Test json changelog command."""
         res = subprocess.check_output([
             'json-changelog',
@@ -90,12 +119,39 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         ]).strip().decode()
         self.assertEqual(
             res,
-            self.json_latest_release_show_releases_output
+            self.json_latest_release_show_releases_out
         )
         return res
 
     @log_info
-    def test_07_make_config_file(self):
+    def test_json_changelog_show_releases_headings_only(self):
+        """Test json changelog command."""
+        res = subprocess.check_output([
+            'json-changelog',
+            '--show-releases',
+            '--headings-only'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.json_show_releases_headings_only_out
+        )
+        return res
+
+    @log_info
+    def test_json_changelog_headings_only(self):
+        """Test json changelog command."""
+        res = subprocess.check_output([
+            'json-changelog',
+            '--headings-only'
+        ]).strip().decode()
+        self.assertEqual(
+            res,
+            self.json_headings_only_out
+        )
+        return res
+
+    @log_info
+    def test_make_config_file(self):
         """Test make config command."""
         res = subprocess.check_output([
             'matyan-make-config',

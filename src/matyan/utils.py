@@ -654,6 +654,7 @@ def json_changelog(between: str = None,
         tree = prepare_changelog(
             between=between,
             unique_commit_messages=True,
+            headings_only=headings_only,
             path=path
         )
         return tree
@@ -661,6 +662,7 @@ def json_changelog(between: str = None,
         releases_tree = prepare_releases_changelog(
             between=between,
             unique_commit_messages=True,
+            headings_only=headings_only,
             path=path
         )
         return releases_tree
@@ -756,21 +758,26 @@ def generate_changelog(between: str = None,
 
             # Do not add branch type if no related branches found
             if tickets:
-                changelog.append(
-                    "\n**{}**".format(BRANCH_TYPES.get(branch_type))
-                )
+                if BRANCH_TYPES.get(branch_type):
+                    changelog.append(
+                        "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                    )
 
             # Add tickets
             for ticket_number, ticket_data in tickets.items():
                 if branch_type != BRANCH_TYPE_OTHER:
                     changelog.append(
-                        "\n*{} {}*\n".format(
+                        "\n*{} {}*{}".format(
                             ticket_number,
-                            ticket_data['title']
+                            ticket_data['title'],
+                            '\n' if not headings_only else ''
                         )
                     )
                 else:
                     changelog.append('')
+
+                if headings_only:
+                    continue
 
                 for commit_hash, commit_data in ticket_data['commits'].items():
                     changelog.append(
@@ -799,21 +806,29 @@ def generate_changelog(between: str = None,
 
                 # Do not add branch type if no related branches found
                 if tickets:
-                    changelog.append(
-                        "\n**{}**".format(BRANCH_TYPES.get(branch_type))
-                    )
+                    if BRANCH_TYPES.get(branch_type):
+                        changelog.append(
+                            "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                        )
 
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
                     if branch_type != BRANCH_TYPE_OTHER:
                         if 'title' not in ticket_data:
                             continue
+
                         changelog.append(
-                            "\n*{} {}*\n".format(ticket_number,
-                                                 ticket_data['title'])
+                            "\n*{} {}*{}".format(
+                                ticket_number,
+                                ticket_data['title'],
+                                '\n' if not headings_only else ''
+                            )
                         )
                     else:
                         changelog.append('')
+
+                    if headings_only:
+                        continue
 
                     for commit_hash, commit_data in ticket_data['commits'].items():  # NOQA
                         changelog.append(
