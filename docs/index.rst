@@ -72,13 +72,14 @@ version 0.0.3.
 
 **Generate changelog between two branches:**
 
-In some cases you only want to show what has been done since last release.
-The following example would generate changelog since version 0.0.1 to
-version 0.0.3.
+In some cases you only want to show which changes have been made to acceptance
+since last production release.
+The following example would generate changelog with changes that are on
+acceptance branch and not yet in master.
 
 .. code-block:: sh
 
-    generate-changelog master..dev
+    generate-changelog master..acceptance
 
 **Generate changelog with releases info shown**
 
