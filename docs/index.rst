@@ -104,6 +104,12 @@ version 0.0.3.
 
     generate-changelog --latest-release --show-releases
 
+**Generate changelog with headings only (no commit messages) and releases info shown**
+
+.. code-block:: sh
+
+    generate-changelog --headings-only --show-releases
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your

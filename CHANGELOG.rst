@@ -15,6 +15,13 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.3.1
+-----
+2019-11-21
+
+- Add ``headings-only`` option to generate headings only (no commit messages).
+- Add date to feature branch data (JSON only yet).
+
 0.3
 ---
 2019-11-20

@@ -259,6 +259,7 @@ def prepare_changelog(
                 tree[branch_type][ticket_number] = {
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
+                    'date': entry['datetime'],
                     'ticket_number': ticket_number,
                     'branch_type': branch_type,
                     'slug': branch_title,
@@ -457,6 +458,7 @@ def prepare_releases_changelog(
                 releases_tree[release][branch_type][ticket_number] = {
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
+                    'date': entry['datetime'],
                     'ticket_number': ticket_number,
                     'branch_type': branch_type,
                     'slug': branch_title,
