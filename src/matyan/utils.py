@@ -17,8 +17,8 @@ from .labels import (
     get_ignore_commits_prefixes,
     get_other_branch_type,
     get_other_branch_type_key,
-    get_unreleased,
-    get_unreleased_key,
+    # get_unreleased,
+    # get_unreleased_key,
     get_unreleased_key_label,
 )
 from .helpers import project_dir
@@ -408,7 +408,7 @@ def prepare_releases_changelog(
     :return:
     """
     logs = get_logs(between=between, path=path)
-    releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
+    # releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
     # releases_tree = {tag: generate_empty_tree() for tag in releases}
     releases_tree = {}
 

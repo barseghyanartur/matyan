@@ -12,8 +12,8 @@ __all__ = (
     'get_ignore_commits_prefixes',
     'get_other_branch_type',
     'get_other_branch_type_key',
-    'get_unreleased',
-    'get_unreleased_key',
+    # 'get_unreleased',
+    # 'get_unreleased_key',
     'get_unreleased_key_label',
 )
 
@@ -44,20 +44,20 @@ def get_all_branch_types() -> Dict[str, str]:
     return branch_types
 
 
-def get_unreleased():
-    """Get unreleased.
-
-    :return:
-    """
-    return dict(CONFIG['Unreleased'])
-
-
-def get_unreleased_key() -> str:
-    return [k for k in get_unreleased().keys()][0]
-
-
-def get_unreleased_label() -> str:
-    return [k for k in get_unreleased().keys()][1]
+# def get_unreleased():
+#     """Get unreleased.
+#
+#     :return:
+#     """
+#     return dict(CONFIG['Unreleased'])
+#
+#
+# def get_unreleased_key() -> str:
+#     return [k for k in get_unreleased().keys()][0]
+#
+#
+# def get_unreleased_label() -> str:
+#     return [k for k in get_unreleased().keys()][1]
 
 
 def get_unreleased_key_label():
