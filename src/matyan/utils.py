@@ -145,7 +145,8 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     ])
     text_log_tags = repository.log(*text_log_tags_args)
     log_tags = text_log_tags.split("\n")
-    commit_tags = dict([s.split(' ', 1)[0].split('\t') for s in log_tags])
+    commit_tags_list = [s.split(' ', 1)[0].split('\t', 1) for s in log_tags]
+    commit_tags = dict([l for l in commit_tags_list if len(l) > 1])
 
     return {
         'TEXT_LOG_MERGES': text_log_merges,
