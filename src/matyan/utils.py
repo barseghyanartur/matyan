@@ -766,32 +766,39 @@ def generate_changelog(between: str = None,
 
             if BRANCH_TYPES.get(branch_type):
                 changelog.append(
-                    "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                    "\n**{}**{}".format(
+                        BRANCH_TYPES.get(branch_type),
+                        '\n' if branch_type == BRANCH_TYPE_OTHER else ''
+                    )
                 )
 
             # Add tickets
             for ticket_number, ticket_data in tickets.items():
+                if 'title' not in ticket_data:
+                    continue
+
                 if branch_type != BRANCH_TYPE_OTHER:
                     changelog.append(
                         "\n*{} {}*{}".format(
                             ticket_number,
                             ticket_data['title'],
-                            '\n' if not headings_only else ''
+                            ''# '\n' if not headings_only else ''
                         )
                     )
-                elif not headings_only:
-                    changelog.append('') and ticket_data.get('commits', {})
 
                 if headings_only:
                     continue
 
+                counter = 0
                 for commit_hash, commit_data in ticket_data['commits'].items():
                     changelog.append(
-                        "- {} [{}]".format(
+                        "{}- {} [{}]".format(
+                            '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
                             commit_data['title'],
                             commit_data['author']
                         )
                     )
+                    counter = counter + 1
     else:
         releases_tree = prepare_releases_changelog(
             between=between,
