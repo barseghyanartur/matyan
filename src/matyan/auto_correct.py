@@ -6,21 +6,31 @@ __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
     'add_final_dot',
     'capitalize',
+    'capitalize_first_letter',
     'unslugify',
 )
 
 
+def capitalize_first_letter(value: AnyStr) -> AnyStr:
+    if len(value) == 0:
+        return value
+    return value[0].upper() + value[1:]
+
+
 def unslugify(value: AnyStr) -> AnyStr:
-    return value.replace('-', ' ').title() if value else ''
+    return capitalize_first_letter(value.replace('-', ' ')) if value else ''
 
 
 def capitalize(value: AnyStr) -> AnyStr:
+    return value
     if len(value) == 0:
         return value
-    return '. '.join([val.strip().capitalize() for val in value.split('.')]).strip()
+    return '. '.join(
+        [capitalize_first_letter(val.strip()) for val in value.split('.')]
+    ).strip()
 
 
 def add_final_dot(value: AnyStr) -> AnyStr:
-    if len(value) and value[-1].isalnum():
+    if len(value) and value[-1].isalnum() and not value.endswith('.'):
         return value + "."
     return value

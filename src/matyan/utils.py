@@ -266,7 +266,7 @@ def prepare_changelog(
                     'ticket_number': ticket_number,
                     'branch_type': branch_type,
                     'slug': branch_title,
-                    'title': branch_title.replace('-', ' ').title(),
+                    'title': unslugify(branch_title),
                     'commits': {},
                     'release': release,
                 }
@@ -469,7 +469,7 @@ def prepare_releases_changelog(
                     'ticket_number': ticket_number,
                     'branch_type': branch_type,
                     'slug': branch_title,
-                    'title': branch_title.replace('-', ' ').title(),
+                    'title': unslugify(branch_title),
                     'commits': {},
                     'release': release,
                 }
@@ -514,7 +514,6 @@ def prepare_releases_changelog(
             except AttributeError:
                 ticket_number = ''
                 commit_message = entry['title'][:]
-
 
             commit_message = unslugify(commit_message)
             commit_message = capitalize(commit_message)

@@ -1,15 +1,15 @@
 **Feature**
 
-*MSFT-1238 Token Authentication*
+*MSFT-1238 Token authentication*
 
-*MSFT-1237 Improve Document Sharing*
+*MSFT-1237 Improve document sharing*
 
-*MSFT-1234 Car Type Suggester*
+*MSFT-1234 Car type suggester*
 
 **Bugfix**
 
-*MSFT-1236 Prevent Duplicate Postal Codes*
+*MSFT-1236 Prevent duplicate postal codes*
 
 **Deprecation**
 
-*MSFT-1235 Deprecate Old Api*
+*MSFT-1235 Deprecate old api*
