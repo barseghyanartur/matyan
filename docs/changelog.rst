@@ -15,6 +15,13 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.3.2
+-----
+2019-11-23
+
+- Fixes in rendering logic.
+- Added simple text beatification (capitalize, add final dot).
+
 0.3.1
 -----
 2019-11-21

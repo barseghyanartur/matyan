@@ -17,7 +17,7 @@ are used for versioning (schema follows below):
 
 0.3.2
 -----
-2019-11-22 (not yet released)
+2019-11-23
 
 - Fixes in rendering logic.
 - Added simple text beatification (capitalize, add final dot).
