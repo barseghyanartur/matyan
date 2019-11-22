@@ -5,7 +5,6 @@ import os
 import re
 import sys
 from shutil import copyfile
-from pprint import pprint
 from typing import Union, Dict, AnyStr, Type, Any
 import git
 from git.exc import GitCommandError
@@ -29,6 +28,8 @@ from .patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
+
+DEBUG = os.environ.get('DEBUG', False)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -760,11 +761,13 @@ def generate_changelog(between: str = None,
                 continue
 
             # Do not add branch type if no related branches found
-            if tickets:
-                if BRANCH_TYPES.get(branch_type):
-                    changelog.append(
-                        "\n**{}**".format(BRANCH_TYPES.get(branch_type))
-                    )
+            if not tickets:
+                continue
+
+            if BRANCH_TYPES.get(branch_type):
+                changelog.append(
+                    "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                )
 
             # Add tickets
             for ticket_number, ticket_data in tickets.items():
@@ -776,8 +779,8 @@ def generate_changelog(between: str = None,
                             '\n' if not headings_only else ''
                         )
                     )
-                else:
-                    changelog.append('')
+                elif not headings_only:
+                    changelog.append('') and ticket_data.get('commits', {})
 
                 if headings_only:
                     continue
@@ -796,6 +799,7 @@ def generate_changelog(between: str = None,
             headings_only=headings_only,
             path=path
         )
+
         for release, branches in releases_tree.items():
             release_label = UNRELEASED_LABEL \
                 if release == UNRELEASED \
@@ -803,43 +807,53 @@ def generate_changelog(between: str = None,
 
             changelog.append("\n### {}".format(release_label))
             for branch_type, tickets in branches.items():
+
                 # Skip adding orphaned commits if explicitly asked not to.
                 if branch_type == BRANCH_TYPE_OTHER and not include_other:
                     continue
 
                 # Do not add branch type if no related branches found
-                if tickets:
-                    if BRANCH_TYPES.get(branch_type):
-                        changelog.append(
-                            "\n**{}**".format(BRANCH_TYPES.get(branch_type))
+                if not tickets:
+                    continue
+
+                if branch_type != BRANCH_TYPE_OTHER:
+                    counter = 0
+
+                if BRANCH_TYPES.get(branch_type):
+                    changelog.append(
+                        "\n**{}**{}".format(
+                            BRANCH_TYPES.get(branch_type),
+                            '\n' if branch_type == BRANCH_TYPE_OTHER else ''
                         )
+                    )
 
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
-                    if branch_type != BRANCH_TYPE_OTHER:
-                        if 'title' not in ticket_data:
-                            continue
+                    if 'title' not in ticket_data:
+                        continue
 
+                    if branch_type != BRANCH_TYPE_OTHER:
                         changelog.append(
                             "\n*{} {}*{}".format(
                                 ticket_number,
                                 ticket_data['title'],
-                                '\n' if not headings_only else ''
+                                ''# if not headings_only else ''
                             )
                         )
-                    else:
-                        changelog.append('')
 
                     if headings_only:
                         continue
 
+                    counter = 0
                     for commit_hash, commit_data in ticket_data['commits'].items():  # NOQA
                         changelog.append(
-                            "- {} [{}]".format(
+                            "{}- {} [{}]".format(
+                                '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
                                 commit_data['title'],
                                 commit_data['author']
                             )
                         )
+                        counter = counter + 1
 
     return '\n'.join(changelog)
 
