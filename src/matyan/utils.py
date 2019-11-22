@@ -9,6 +9,7 @@ from typing import Union, Dict, AnyStr, Type, Any
 import git
 from git.exc import GitCommandError
 
+from .auto_correct import add_final_dot, capitalize, unslugify
 from .labels import (
     get_all_branch_types,
     get_branch_types,
@@ -310,6 +311,10 @@ def prepare_changelog(
                 ticket_number = ''
                 commit_message = entry['title'][:]
 
+            commit_message = unslugify(commit_message)
+            commit_message = capitalize(commit_message)
+            commit_message = add_final_dot(commit_message)
+
             # Ignore the following messages
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
@@ -509,6 +514,11 @@ def prepare_releases_changelog(
             except AttributeError:
                 ticket_number = ''
                 commit_message = entry['title'][:]
+
+
+            commit_message = unslugify(commit_message)
+            commit_message = capitalize(commit_message)
+            commit_message = add_final_dot(commit_message)
 
             # Ignore the following messages
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
