@@ -779,10 +779,9 @@ def generate_changelog(between: str = None,
 
                 if branch_type != BRANCH_TYPE_OTHER:
                     changelog.append(
-                        "\n*{} {}*{}".format(
+                        "\n*{} {}*".format(
                             ticket_number,
-                            ticket_data['title'],
-                            ''# '\n' if not headings_only else ''
+                            ticket_data['title']
                         )
                     )
 
@@ -838,10 +837,9 @@ def generate_changelog(between: str = None,
 
                     if branch_type != BRANCH_TYPE_OTHER:
                         changelog.append(
-                            "\n*{} {}*{}".format(
+                            "\n*{} {}*".format(
                                 ticket_number,
-                                ticket_data['title'],
-                                ''# if not headings_only else ''
+                                ticket_data['title']
                             )
                         )
 
