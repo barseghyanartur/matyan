@@ -816,9 +816,6 @@ def generate_changelog(between: str = None,
                 if not tickets:
                     continue
 
-                if branch_type != BRANCH_TYPE_OTHER:
-                    counter = 0
-
                 if BRANCH_TYPES.get(branch_type):
                     changelog.append(
                         "\n**{}**{}".format(
