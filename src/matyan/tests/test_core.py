@@ -3,6 +3,7 @@ import re
 import logging
 import unittest
 
+
 from ..utils import (
     make_config_file,
     generate_changelog,

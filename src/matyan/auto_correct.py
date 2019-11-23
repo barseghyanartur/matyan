@@ -22,7 +22,6 @@ def unslugify(value: AnyStr) -> AnyStr:
 
 
 def capitalize(value: AnyStr) -> AnyStr:
-    return value
     if len(value) == 0:
         return value
     return '. '.join(
