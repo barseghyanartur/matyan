@@ -74,6 +74,15 @@ class ChangelogMixin:
         with open(headings_only_out, 'r') as file:
             cls.headings_only_out = file.read().strip()
 
+        # Expected output of the
+        # `generate-changelog --show-releases --unreleased-only`
+        # command.
+        show_releases_unreleased_only_out = project_dir(
+            'tests/output/generate-changelog-show-releases-unreleased-only.md'
+        )
+        with open(show_releases_unreleased_only_out, 'r') as file:
+            cls.show_releases_unreleased_only_out = file.read().strip()
+
         # **************************** JSON *******************************
 
         # Expected output of the `json-changelog` command.

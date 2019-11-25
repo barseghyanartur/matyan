@@ -91,6 +91,23 @@ class TestCore(unittest.TestCase, ChangelogMixin):
         return res
 
     @log_info
+    def test_generate_changelog_show_releases_unreleased_only(self):
+        """Test generate changelog."""
+        res = generate_changelog(
+            between='master..dev',
+            include_other=False,
+            show_releases=True,
+            headings_only=True,
+            unreleased_only=True,
+            path=self.test_dir
+        ).strip()
+        self.assertEqual(
+            res,
+            self.show_releases_unreleased_only_out
+        )
+        return res
+
+    @log_info
     def test_json_changelog(self):
         """Test JSON changelog."""
         res = json_changelog(
@@ -140,6 +157,21 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             self.json_show_releases_headings_only_out
         )
         return res
+
+    # @log_info
+    # def test_json_changelog_show_releases_unreleased_only(self):
+    #     """Test json changelog."""
+    #     res = json_changelog(
+    #         include_other=False,
+    #         show_releases=True,
+    #         headings_only=True,
+    #         path=self.test_dir
+    #     )
+    #     self.assertEqual(
+    #         str(res),
+    #         self.json_show_releases_headings_only_out
+    #     )
+    #     return res
 
     @log_info
     def test_make_config_file(self):

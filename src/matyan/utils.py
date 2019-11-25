@@ -770,7 +770,7 @@ def generate_changelog(between: str = None,
             between=between,
             unique_commit_messages=True,
             headings_only=headings_only,
-            unreleased_only=unreleased_only,
+            unreleased_only=unreleased_only and show_releases,
             path=path
         )
         for branch_type, tickets in tree.items():
@@ -821,7 +821,7 @@ def generate_changelog(between: str = None,
             between=between,
             unique_commit_messages=True,
             headings_only=headings_only,
-            unreleased_only=unreleased_only,
+            unreleased_only=unreleased_only and show_releases,
             path=path
         )
 
@@ -920,7 +920,7 @@ def generate_changelog_cli() -> Type[None]:
         dest="unreleased_only",
         default=False,
         action='store_true',
-        help="Show unreleased only",
+        help="Show unreleased only. Works in combination with --show-releases",
     )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
