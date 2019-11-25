@@ -203,6 +203,7 @@ def prepare_changelog(
     between: str = None,
     unique_commit_messages: bool = False,
     headings_only: bool = False,
+    unreleased_only: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -401,6 +402,7 @@ def prepare_releases_changelog(
     between: str = None,
     unique_commit_messages: bool = False,
     headings_only: bool = False,
+    unreleased_only: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -476,6 +478,8 @@ def prepare_releases_changelog(
             branch_types.update({ticket_number: branch_type})
     
     if headings_only:
+        if unreleased_only:
+            return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
         return releases_tree
     
     # Now go through commits
@@ -609,6 +613,9 @@ def prepare_releases_changelog(
                     'title': commit_message,
                 }
 
+    if unreleased_only:
+        return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
+
     return releases_tree
 
 
@@ -741,6 +748,7 @@ def generate_changelog(between: str = None,
                        show_releases: bool = False,
                        latest_release: bool = False,
                        headings_only: bool = False,
+                       unreleased_only: bool = False,
                        path: str = None) -> str:
     """Generate changelog (markdown format)."""
 
@@ -762,6 +770,7 @@ def generate_changelog(between: str = None,
             between=between,
             unique_commit_messages=True,
             headings_only=headings_only,
+            unreleased_only=unreleased_only,
             path=path
         )
         for branch_type, tickets in tree.items():
@@ -812,6 +821,7 @@ def generate_changelog(between: str = None,
             between=between,
             unique_commit_messages=True,
             headings_only=headings_only,
+            unreleased_only=unreleased_only,
             path=path
         )
 
@@ -905,12 +915,20 @@ def generate_changelog_cli() -> Type[None]:
         action='store_true',
         help="Generate headings only (no commit messages, only branch titles)",
     )
+    parser.add_argument(
+        '--unreleased-only',
+        dest="unreleased_only",
+        default=False,
+        action='store_true',
+        help="Show unreleased only",
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
     latest_release = args.latest_release
     headings_only = args.headings_only
+    unreleased_only = args.unreleased_only
 
     print(
         generate_changelog(
@@ -918,7 +936,8 @@ def generate_changelog_cli() -> Type[None]:
             include_other=include_other,
             show_releases=show_releases,
             latest_release=latest_release,
-            headings_only=headings_only
+            headings_only=headings_only,
+            unreleased_only=unreleased_only
         )
     )
 
