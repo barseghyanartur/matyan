@@ -11,6 +11,5 @@
 
 *MSFT-1239 Deprecate Python2*
 
+- Add initial MyPY setup. [Artur Barseghyan]
 - Deprecate Python2. [Artur Barseghyan]
-
-**Other**

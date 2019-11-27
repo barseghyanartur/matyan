@@ -111,6 +111,12 @@ acceptance branch and not yet in master.
 
     generate-changelog --headings-only --show-releases
 
+**Generate changelog between two branches, show unreleased changes only:**
+
+.. code-block:: sh
+
+    generate-changelog master..acceptance --show-releases --unreleased-only
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your

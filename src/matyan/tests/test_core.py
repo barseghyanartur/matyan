@@ -3,7 +3,6 @@ import re
 import logging
 import unittest
 
-
 from ..utils import (
     make_config_file,
     generate_changelog,
@@ -13,6 +12,7 @@ from ..utils import (
     prepare_changelog,
     prepare_releases_changelog,
     validate_between,
+    get_repository,
 )
 from ..patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
@@ -38,6 +38,11 @@ class TestCore(unittest.TestCase, ChangelogMixin):
     def setUpClass(cls) -> None:
         super(TestCore, cls).setUpClass()
         cls.prepare_changelog_data()
+        cls.repo = get_repository(cls.test_dir)
+
+    def tearDown(self):
+        super(TestCore, self).tearDown()
+        self.repo.checkout('master')
 
     @log_info
     def test_generate_changelog(self):
@@ -84,6 +89,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             headings_only=True,
             path=self.test_dir
         ).strip()
+
         self.assertEqual(
             res,
             self.show_releases_headings_only_out
@@ -94,13 +100,14 @@ class TestCore(unittest.TestCase, ChangelogMixin):
     def test_generate_changelog_show_releases_unreleased_only(self):
         """Test generate changelog."""
         res = generate_changelog(
-            between='master..dev',
+            between='master..test',
             include_other=False,
             show_releases=True,
-            headings_only=True,
+            headings_only=False,
             unreleased_only=True,
             path=self.test_dir
         ).strip()
+
         self.assertEqual(
             res,
             self.show_releases_unreleased_only_out
