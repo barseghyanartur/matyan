@@ -38,11 +38,11 @@ class TestCore(unittest.TestCase, ChangelogMixin):
     def setUpClass(cls) -> None:
         super(TestCore, cls).setUpClass()
         cls.prepare_changelog_data()
-        cls.repo = get_repository(cls.test_dir)
 
     def tearDown(self):
         super(TestCore, self).tearDown()
         self.repo.checkout('master')
+        self.repo.pull()
 
     @log_info
     def test_generate_changelog(self):

@@ -2,6 +2,7 @@ import os
 import git
 
 from ..helpers import project_dir
+from ..utils import get_repository
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -26,6 +27,10 @@ class ChangelogMixin:
                 cls.test_dir,
                 StrictHostKeyChecking=False
             )
+            cls.repo = get_repository(cls.test_dir)
+        else:
+            cls.repo = get_repository(cls.test_dir)
+            cls.repo.pull()
 
         # Go to cloned repository
         os.chdir(cls.test_dir)

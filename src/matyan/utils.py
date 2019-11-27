@@ -40,6 +40,7 @@ __all__ = (
     'generate_changelog_cli',
     'get_branch_type',
     'get_logs',
+    'get_repository',
     'json_changelog',
     'json_changelog_cli',
     'make_config_file',
