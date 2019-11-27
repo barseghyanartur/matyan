@@ -1,5 +1,6 @@
 import os
 import git
+import shutil
 
 from ..helpers import project_dir
 from ..utils import get_repository
@@ -14,6 +15,14 @@ __all__ = (
 
 class ChangelogMixin:
     """Changelog mixin."""
+
+    @classmethod
+    def clean_up(cls):
+        """Clean up."""
+        shutil.rmtree(os.path.join(cls.test_dir, 'htmlcov'), ignore_errors=True)
+        ini_file_path = os.path.join(cls.test_dir, '.matyan.ini')
+        if os.path.exists(ini_file_path):
+            os.remove(ini_file_path)
 
     @classmethod
     def prepare_changelog_data(cls):

@@ -41,6 +41,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
 
     def tearDown(self):
         super(TestCore, self).tearDown()
+        self.clean_up()
         self.repo.checkout('master')
         self.repo.pull()
 
@@ -99,6 +100,8 @@ class TestCore(unittest.TestCase, ChangelogMixin):
     @log_info
     def test_generate_changelog_show_releases_unreleased_only(self):
         """Test generate changelog."""
+        self.repo.checkout('test')
+        self.repo.checkout('master')
         res = generate_changelog(
             between='master..test',
             include_other=False,
