@@ -6,7 +6,7 @@ import re
 import sys
 from shutil import copyfile
 from typing import Union, Dict, AnyStr, Type, Any
-import git
+from git import Git
 from git.exc import GitCommandError
 
 from .auto_correct import add_final_dot, capitalize, unslugify
@@ -76,11 +76,11 @@ UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
 IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()
 
 
-def get_repository(path: str = None):
+def get_repository(path: str = None) -> Git:
     if not (path and os.path.exists(path) and os.path.isdir(path)):
         path = os.getcwd()
 
-    return git.Git(path)
+    return Git(path)
 
 
 def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
@@ -321,9 +321,9 @@ def prepare_changelog(
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
-            for ignore_prefix in get_ignore_commits_prefixes():
-                if commit_message.lower().startswith(ignore_prefix):
-                    continue
+            ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
+            if commit_message.lower().startswith(ignore_commits_prefixes):
+                continue
 
             commit_hash = commit_message \
                 if unique_commit_messages \
@@ -528,9 +528,9 @@ def prepare_releases_changelog(
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
-            for ignore_prefix in get_ignore_commits_prefixes():
-                if commit_message.lower().startswith(ignore_prefix):
-                    continue
+            ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
+            if commit_message.lower().startswith(ignore_commits_prefixes):
+                continue
 
             commit_hash = commit_message \
                 if unique_commit_messages \
