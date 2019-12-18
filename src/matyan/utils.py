@@ -20,6 +20,7 @@ from .labels import (
     # get_unreleased,
     # get_unreleased_key,
     get_unreleased_key_label,
+    get_settings,
 )
 from .helpers import project_dir
 from .patterns import (
@@ -29,6 +30,7 @@ from .patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
+from .registry import Registry
 
 DEBUG = os.environ.get('DEBUG', False)
 
@@ -226,6 +228,8 @@ def prepare_changelog(
 
     logs = get_logs(between=between, path=path)
 
+    settings = get_settings()
+
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
         try:
@@ -252,7 +256,21 @@ def prepare_changelog(
             except AttributeError:
                 ticket_number = TICKET_NUMBER_OTHER
 
-            branch_title = match.group('branch_title')
+            branch_title = None
+            branch_description = None
+            if (
+                settings.get('fetchDataFrom')
+                and settings.get('fetchDataFrom') in Registry.REGISTRY
+                and ticket_number != TICKET_NUMBER_OTHER
+            ):
+                fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher = fetcher_cls()
+                fetcher_data = fetcher.fetch_issue_data(ticket_number)
+                branch_title = fetcher_data['title']
+                branch_description = fetcher_data['description']
+
+            if not branch_title:
+                branch_title = match.group('branch_title')
 
             # For normal tree
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
@@ -269,6 +287,7 @@ def prepare_changelog(
                     'branch_type': branch_type,
                     'slug': branch_title,
                     'title': unslugify(branch_title),
+                    'description': branch_description,
                     'commits': {},
                     'release': release,
                 }
@@ -417,6 +436,7 @@ def prepare_releases_changelog(
     :return:
     """
     logs = get_logs(between=between, path=path)
+    settings = get_settings()
     # releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
     # releases_tree = {tag: generate_empty_tree() for tag in releases}
     releases_tree = {}
@@ -451,7 +471,21 @@ def prepare_releases_changelog(
             except AttributeError:
                 ticket_number = TICKET_NUMBER_OTHER
 
-            branch_title = match.group('branch_title')
+            branch_title = None
+            branch_description = None
+            if (
+                    settings.get('fetchDataFrom')
+                    and settings.get('fetchDataFrom') in Registry.REGISTRY
+                    and ticket_number != TICKET_NUMBER_OTHER
+            ):
+                fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher = fetcher_cls()
+                fetcher_data = fetcher.fetch_issue_data(ticket_number)
+                branch_title = fetcher_data['title']
+                branch_description = fetcher_data['description']
+
+            if not branch_title:
+                branch_title = match.group('branch_title')
 
             # For normal tree
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
@@ -473,6 +507,7 @@ def prepare_releases_changelog(
                     'branch_type': branch_type,
                     'slug': branch_title,
                     'title': unslugify(branch_title),
+                    'description': branch_description,
                     'commits': {},
                     'release': release,
                 }
@@ -664,6 +699,7 @@ def json_changelog(between: str = None,
                    show_releases: bool = False,
                    latest_release: bool = False,
                    headings_only: bool = False,
+                   show_description: bool = False,
                    path: str = None):
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
@@ -726,12 +762,21 @@ def json_changelog_cli() -> Type[None]:
         action='store_true',
         help="Generate headings only (no commit messages, only branch titles)",
     )
+    parser.add_argument(
+        '--show-description',
+        dest="show_description",
+        default=False,
+        action='store_true',
+        help="Show description",
+    )
+
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
     latest_release = args.latest_release
     headings_only = args.headings_only
+    show_description = args.show_description
 
     print(
         json_changelog(
@@ -739,7 +784,8 @@ def json_changelog_cli() -> Type[None]:
             include_other=include_other,
             show_releases=show_releases,
             latest_release=latest_release,
-            headings_only=headings_only
+            headings_only=headings_only,
+            show_description=show_description
         )
     )
 
@@ -750,6 +796,7 @@ def generate_changelog(between: str = None,
                        latest_release: bool = False,
                        headings_only: bool = False,
                        unreleased_only: bool = False,
+                       show_description: bool = False,
                        path: str = None) -> str:
     """Generate changelog (markdown format)."""
 
@@ -803,6 +850,8 @@ def generate_changelog(between: str = None,
                             ticket_data['title']
                         )
                     )
+                    if show_description and ticket_data['description']:
+                        changelog.append(ticket_data['description'])
 
                 if headings_only:
                     continue
@@ -923,6 +972,13 @@ def generate_changelog_cli() -> Type[None]:
         action='store_true',
         help="Show unreleased only. Works in combination with --show-releases",
     )
+    parser.add_argument(
+        '--show-description',
+        dest="show_description",
+        default=False,
+        action='store_true',
+        help="Show description",
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
@@ -930,6 +986,7 @@ def generate_changelog_cli() -> Type[None]:
     latest_release = args.latest_release
     headings_only = args.headings_only
     unreleased_only = args.unreleased_only
+    show_description = args.show_description
 
     print(
         generate_changelog(
@@ -938,7 +995,8 @@ def generate_changelog_cli() -> Type[None]:
             show_releases=show_releases,
             latest_release=latest_release,
             headings_only=headings_only,
-            unreleased_only=unreleased_only
+            unreleased_only=unreleased_only,
+            show_description=show_description
         )
     )
 

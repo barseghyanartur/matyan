@@ -1,3 +1,4 @@
+from configparser import SectionProxy
 from typing import Union, Dict, AnyStr, Type, List
 
 from .config import CONFIG
@@ -15,6 +16,7 @@ __all__ = (
     # 'get_unreleased',
     # 'get_unreleased_key',
     'get_unreleased_key_label',
+    'get_settings',
 )
 
 
@@ -24,6 +26,13 @@ def get_branch_types() -> Dict[str, str]:
     :return:
     """
     return dict(CONFIG['BranchTypes'])
+
+
+def get_settings() -> SectionProxy:
+    try:
+        return CONFIG['Settings']
+    except KeyError:
+        return {}
 
 
 def get_other_branch_type() -> Dict[str, str]:
