@@ -8,7 +8,7 @@ __all__ = (
 )
 
 
-def project_dir(base):
+def project_dir(base: str) -> str:
     """Absolute path to a file from current directory."""
     return os.path.abspath(
         os.path.join(os.path.dirname(__file__), base).replace('\\', '/')

@@ -36,7 +36,7 @@ REGEX_PATTERN_BRANCH_TYPE = r'(((?P<branch_type>{branch_types}))\/)?'.format(
 
 
 REGEX_PATTERN_BRANCH_NAME = REGEX_PATTERN_BRANCH_TYPE + \
-    r'((?P<ticket_number>[a-zA-Z]{1,7}-\d{4,6})-)?' \
+    r'((?P<ticket_number>[a-zA-Z]{1,7}-\d{1,8})-)?' \
     r'(?P<branch_title>[a-zA-Z-\d]*)'
 
 REGEX_PATTERN_MERGED_BRANCH_NAME = r'(\s*)' \
