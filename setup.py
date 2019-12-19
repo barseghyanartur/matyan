@@ -46,6 +46,9 @@ setup(
             'matyan-generate-changelog = matyan.utils:generate_changelog_cli',
         ]
     },
+    extras_require={
+        'jira':  ["atlassian-python-api"],
+    },
     include_package_data=True,
     license='GPL-2.0-only OR LGPL-2.0-or-later',
     install_requires=[

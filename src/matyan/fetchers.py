@@ -17,6 +17,7 @@ __all__ = (
 class BaseFetcher(metaclass=Registry):
 
     uid: str = None
+    instance: Union[Jira]
 
     def __init__(self, *args, **kwargs):
         if not self.uid:
@@ -37,6 +38,7 @@ class BaseFetcher(metaclass=Registry):
 class JiraFetcher(BaseFetcher):
 
     uid: str = 'Jira'
+    instance: Jira
 
     def get_instance(self) -> Jira:
         config = self.get_config()
