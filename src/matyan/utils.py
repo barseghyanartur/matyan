@@ -22,6 +22,7 @@ from .labels import (
     get_unreleased_key_label,
     get_settings,
 )
+from .fetchers import *
 from .helpers import project_dir
 from .patterns import (
     REGEX_PATTERN_BRANCH_NAME,
@@ -207,6 +208,7 @@ def prepare_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
+    fetch_additional_data: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -259,7 +261,8 @@ def prepare_changelog(
             branch_title = None
             branch_description = None
             if (
-                settings.get('fetchDataFrom')
+                fetch_additional_data
+                and settings.get('fetchDataFrom')
                 and settings.get('fetchDataFrom') in Registry.REGISTRY
                 and ticket_number != TICKET_NUMBER_OTHER
             ):
@@ -423,6 +426,7 @@ def prepare_releases_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
+    fetch_additional_data: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -473,11 +477,14 @@ def prepare_releases_changelog(
 
             branch_title = None
             branch_description = None
+
             if (
-                    settings.get('fetchDataFrom')
-                    and settings.get('fetchDataFrom') in Registry.REGISTRY
-                    and ticket_number != TICKET_NUMBER_OTHER
+                fetch_additional_data
+                and settings.get('fetchDataFrom')
+                and settings.get('fetchDataFrom') in Registry.REGISTRY
+                and ticket_number != TICKET_NUMBER_OTHER
             ):
+                # import ipdb; ipdb.set_trace()
                 fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
@@ -819,6 +826,7 @@ def generate_changelog(between: str = None,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
+            fetch_additional_data=show_description,
             path=path
         )
         for branch_type, tickets in tree.items():
@@ -851,7 +859,9 @@ def generate_changelog(between: str = None,
                         )
                     )
                     if show_description and ticket_data['description']:
-                        changelog.append(ticket_data['description'])
+                        changelog.append(
+                            "\n{}".format(ticket_data['description'])
+                        )
 
                 if headings_only:
                     continue
@@ -872,6 +882,7 @@ def generate_changelog(between: str = None,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
+            fetch_additional_data=show_description,
             path=path
         )
 
@@ -911,6 +922,11 @@ def generate_changelog(between: str = None,
                                 ticket_data['title']
                             )
                         )
+
+                        if show_description and ticket_data['description']:
+                            changelog.append(
+                                "\n{}".format(ticket_data['description'])
+                            )
 
                     if headings_only:
                         continue
