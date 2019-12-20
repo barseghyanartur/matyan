@@ -10,19 +10,26 @@ from git import Git
 from git.exc import GitCommandError
 
 from .auto_correct import add_final_dot, capitalize, unslugify
+from .constants import PRETTY_FORMAT, TICKET_NUMBER_OTHER
 from .labels import (
-    get_all_branch_types,
-    get_branch_types,
-    get_ignore_commits_exact_words,
+    # get_all_branch_types,
+    # get_branch_types,
+    # get_ignore_commits_exact_words,
     get_ignore_commits_prefixes,
-    get_other_branch_type,
-    get_other_branch_type_key,
+    # get_other_branch_type,
+    # get_other_branch_type_key,
     # get_unreleased,
     # get_unreleased_key,
-    get_unreleased_key_label,
+    # get_unreleased_key_label,
     get_settings,
+    BRANCH_TYPE_OTHER,
+    BRANCH_TYPES,
+    IGNORE_COMMITS_EXACT_WORDS,
+    UNRELEASED,
+    UNRELEASED_LABEL,
 )
 from .fetchers import *
+from .renderers.markdown import MarkdownRenderer
 from .helpers import project_dir
 from .patterns import (
     REGEX_PATTERN_BRANCH_NAME,
@@ -53,30 +60,8 @@ __all__ = (
     'validate_between',
 )
 
-PRETTY_FORMAT = '{' \
-                '"commit_hash": "%H", ' \
-                '"commit_abbr": "%h", ' \
-                '"datetime": "%ci", ' \
-                '"title": "%s",' \
-                '"author": "%an", ' \
-                '"author_email": "%ae", ' \
-                '"merge": "%P"' \
-                '}'
 
-BRANCH_TYPE_OTHER = get_other_branch_type_key()  # 'other'
-BRANCH_TYPES = get_all_branch_types()
-# BRANCH_TYPES = {
-#     'other': "Other",
-#     'feature': "Features",
-#     'bugfix': "Bugfixes",
-#     'hotfix': "Hotfixes",
-#     'deprecation': "Deprecations",
-# }
-TICKET_NUMBER_OTHER = 'other'
-# UNRELEASED = 'unreleased'
-UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
 
-IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()
 
 
 def get_repository(path: str = None) -> Git:
@@ -817,7 +802,7 @@ def generate_changelog(between: str = None,
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
 
-    changelog = []
+    renderer = MarkdownRenderer()
 
     if not show_releases:
         tree = prepare_changelog(
@@ -828,55 +813,13 @@ def generate_changelog(between: str = None,
             fetch_additional_data=show_description,
             path=path
         )
-        for branch_type, tickets in tree.items():
-            # Skip adding orphaned commits if explicitly asked not to.
-            if branch_type == BRANCH_TYPE_OTHER and not include_other:
-                continue
 
-            # Do not add branch type if no related branches found
-            if not tickets:
-                continue
-
-            if BRANCH_TYPES.get(branch_type):
-                changelog.append(
-                    "\n**{}**{}".format(
-                        BRANCH_TYPES.get(branch_type),
-                        '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                    )
-                )
-
-            # Add tickets
-            for ticket_number, ticket_data in tickets.items():
-                if 'title' not in ticket_data:
-                    continue
-
-                if branch_type != BRANCH_TYPE_OTHER:
-                    changelog.append(
-                        "\n*{} {}*".format(
-                            ticket_number,
-                            ticket_data['title']
-                        )
-                    )
-                    if show_description and ticket_data['description']:
-                        changelog.append(
-                            "\n```\n{}\n```".format(
-                                ticket_data['description'].strip()
-                            )
-                        )
-
-                if headings_only:
-                    continue
-
-                counter = 0
-                for commit_hash, commit_data in ticket_data['commits'].items():
-                    changelog.append(
-                        "{}- {} [{}]".format(
-                            '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                            commit_data['title'],
-                            commit_data['author']
-                        )
-                    )
-                    counter = counter + 1
+        return renderer.render_changelog(
+            tree=tree,
+            include_other=include_other,
+            headings_only=headings_only,
+            show_description=show_description
+        )
     else:
         releases_tree = prepare_releases_changelog(
             between=between,
@@ -887,65 +830,12 @@ def generate_changelog(between: str = None,
             path=path
         )
 
-        for release, branches in releases_tree.items():
-            release_label = UNRELEASED_LABEL \
-                if release == UNRELEASED \
-                else release
-
-            changelog.append("\n### {}".format(release_label))
-            for branch_type, tickets in branches.items():
-
-                # Skip adding orphaned commits if explicitly asked not to.
-                if branch_type == BRANCH_TYPE_OTHER and not include_other:
-                    continue
-
-                # Do not add branch type if no related branches found
-                if not tickets:
-                    continue
-
-                if BRANCH_TYPES.get(branch_type):
-                    changelog.append(
-                        "\n**{}**{}".format(
-                            BRANCH_TYPES.get(branch_type),
-                            '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                        )
-                    )
-
-                # Add tickets
-                for ticket_number, ticket_data in tickets.items():
-                    if 'title' not in ticket_data:
-                        continue
-
-                    if branch_type != BRANCH_TYPE_OTHER:
-                        changelog.append(
-                            "\n*{} {}*".format(
-                                ticket_number,
-                                ticket_data['title']
-                            )
-                        )
-
-                        if show_description and ticket_data['description']:
-                            changelog.append(
-                                "\n```\n{}\n```".format(
-                                    ticket_data['description'].strip()
-                                )
-                            )
-
-                    if headings_only:
-                        continue
-
-                    counter = 0
-                    for commit_hash, commit_data in ticket_data['commits'].items():  # NOQA
-                        changelog.append(
-                            "{}- {} [{}]".format(
-                                '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                                commit_data['title'],
-                                commit_data['author']
-                            )
-                        )
-                        counter = counter + 1
-
-    return '\n'.join(changelog)
+        return renderer.render_releases_changelog(
+            releases_tree=releases_tree,
+            include_other=include_other,
+            headings_only=headings_only,
+            show_description=show_description
+        )
 
 
 def generate_changelog_cli() -> Type[None]:
