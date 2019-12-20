@@ -1,9 +1,8 @@
-from typing import Union, Dict, Any
+from typing import Dict
 
 from atlassian import Jira
 
-from .config import CONFIG
-from .registry import Registry
+from .base import BaseFetcher
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -12,27 +11,6 @@ __all__ = (
     'BaseFetcher',
     'JiraFetcher',
 )
-
-
-class BaseFetcher(metaclass=Registry):
-
-    uid: str = None
-    instance: Union[Jira]
-
-    def __init__(self, *args, **kwargs):
-        if not self.uid:
-            raise NotImplementedError
-
-        self.instance = self.get_instance()
-
-    def get_config(self) -> Dict[str, str]:
-        return dict(CONFIG[self.uid])
-
-    def get_instance(self) -> Union[Jira]:
-        raise NotImplementedError
-
-    def fetch_issue_data(self, issue_id: str) -> Dict[str, str]:
-        raise NotImplementedError
 
 
 class JiraFetcher(BaseFetcher):

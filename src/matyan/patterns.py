@@ -36,7 +36,7 @@ REGEX_PATTERN_BRANCH_TYPE = r'(((?P<branch_type>{branch_types}))\/)?'.format(
 
 
 REGEX_PATTERN_BRANCH_NAME = REGEX_PATTERN_BRANCH_TYPE + \
-    r'((?P<ticket_number>[a-zA-Z]{1,7}-\d{1,8})-)?' \
+    r'((?P<ticket_number>[a-zA-Z]{1,12}-\d{1,12})-)?' \
     r'(?P<branch_title>[a-zA-Z-\d]*)'
 
 REGEX_PATTERN_MERGED_BRANCH_NAME = r'(\s*)' \
@@ -46,10 +46,10 @@ REGEX_PATTERN_MERGED_BRANCH_NAME = r'(\s*)' \
                                    r')' + \
                                    REGEX_PATTERN_BRANCH_NAME
 
-REGEX_PATTERN_COMMIT = r'(?P<ticket_number>[a-zA-Z]{1,7}-\d{4,6})?'
+REGEX_PATTERN_COMMIT = r'(?P<ticket_number>[a-zA-Z]{1,12}-\d{1,12})?'
 REGEX_PATTERN_COMMIT_LINE = r'(\s*)' + \
                             REGEX_PATTERN_COMMIT + \
                             r'\s?(?P<commit_message>.*)'
 
 
-REGEX_PATTERN_TAG = r'(?P<tag>((\d{1,9}\.)+(\d)+))'
+REGEX_PATTERN_TAG = r'(?P<tag>((\d{1,12}\.)+(\d)+))'

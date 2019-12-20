@@ -15,6 +15,18 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.3.5
+------
+2019-12-20
+
+- Placing ``.matyan.ini`` config file (placed in the home root directory
+  now makes it a global configuration). File placed locally may override the
+  settings. That could be handy, among others, to store credentials to Jira,
+  which you probably do not want to have versioned.
+- Make it possible to fetch additional information (for now from Jira only,
+  but can be extended).
+- Softened the regular expression patterns for ticket numbers/branch names.
+
 0.3.4
 -----
 2019-11-27

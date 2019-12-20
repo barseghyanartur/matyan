@@ -153,6 +153,18 @@ Sample configuration:
             continue on
 
 
+Note, that placing ``.matyan.ini`` into the home root will make that
+configuration global for all projects. That's however is handy, since local
+``.matyan.ini`` files simply override the global ones. You could use global
+configuration for instance for storing credentials to Jira.
+
+.. code-block:: text
+
+    [Jira]
+    url:https://barseghyanartur.atlassian.net/
+    username:user@domain.com
+    token:abcd1234
+
 Tips and tricks
 ===============
 Write to file

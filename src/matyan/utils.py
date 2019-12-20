@@ -484,7 +484,6 @@ def prepare_releases_changelog(
                 and settings.get('fetchDataFrom') in Registry.REGISTRY
                 and ticket_number != TICKET_NUMBER_OTHER
             ):
-                # import ipdb; ipdb.set_trace()
                 fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
@@ -860,7 +859,9 @@ def generate_changelog(between: str = None,
                     )
                     if show_description and ticket_data['description']:
                         changelog.append(
-                            "\n{}".format(ticket_data['description'])
+                            "\n```\n{}\n```".format(
+                                ticket_data['description'].strip()
+                            )
                         )
 
                 if headings_only:
@@ -925,7 +926,9 @@ def generate_changelog(between: str = None,
 
                         if show_description and ticket_data['description']:
                             changelog.append(
-                                "\n{}".format(ticket_data['description'])
+                                "\n```\n{}\n```".format(
+                                    ticket_data['description'].strip()
+                                )
                             )
 
                     if headings_only:
