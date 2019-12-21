@@ -118,3 +118,6 @@ testing/
 matyan-testing/
 matyan-testing-jira-integration/
 deb_dist/
+
+profile.cprof
+pycallgraph.png
