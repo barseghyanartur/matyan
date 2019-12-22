@@ -61,6 +61,14 @@ class ChangelogMixin:
         with open(show_releases_out, 'r') as file:
             cls.show_releases_out = file.read().strip()
 
+        # Expected output of the `generate-changelog --show-releases
+        # --renderer=historical-markdown` command.
+        show_releases_rend_hist_out = project_dir(
+            'tests/output/generate-changelog-show-releases-rend-hist.md'
+        )
+        with open(show_releases_rend_hist_out, 'r') as file:
+            cls.show_releases_rend_hist_out = file.read().strip()
+
         # Expected output of the
         # `generate-changelog --show-releases --latest-release`
         # command.
@@ -96,6 +104,16 @@ class ChangelogMixin:
         )
         with open(show_releases_unreleased_only_out, 'r') as file:
             cls.show_releases_unreleased_only_out = file.read().strip()
+
+        # *********************** Restructured text ***********************
+
+        # Expected output of the `generate-changelog --show-releases`
+        # command.
+        show_releases_rst_out = project_dir(
+            'tests/output/generate-changelog-show-releases.rst'
+        )
+        with open(show_releases_rst_out, 'r') as file:
+            cls.show_releases_rst_out = file.read().strip()
 
         # **************************** JSON *******************************
 

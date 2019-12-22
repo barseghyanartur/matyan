@@ -26,7 +26,9 @@ are used for versioning (schema follows below):
 - Make it possible to fetch additional information (for now from Jira only,
   but can be extended).
 - Softened the regular expression patterns for ticket numbers/branch names.
-- Initial steps on on introducing renderer classes.
+- Implemented renderer classes (at the moment markdown and restructured text).
+- Updated default rendering of markdown (for better markup). If you need old
+  style behaviour, use ``historical-markdown`` renderer.
 
 0.3.4
 -----

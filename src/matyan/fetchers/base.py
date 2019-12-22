@@ -8,10 +8,17 @@ __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
     'BaseFetcher',
+    'FetcherRegistry',
 )
 
 
-class BaseFetcher(metaclass=Registry):
+class FetcherRegistry(Registry):
+    """Fetcher registry."""
+
+    REGISTRY: Dict[str, Type] = {}
+
+
+class BaseFetcher(metaclass=FetcherRegistry):
 
     uid: str = None
     instance: Type

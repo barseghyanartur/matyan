@@ -5,7 +5,7 @@ import os
 import re
 import sys
 from shutil import copyfile
-from typing import Union, Dict, AnyStr, Type, Any
+from typing import Union, Dict, AnyStr, Type, Any, List
 from git import Git
 from git.exc import GitCommandError
 
@@ -28,8 +28,14 @@ from .labels import (
     UNRELEASED,
     UNRELEASED_LABEL,
 )
-from .fetchers import *
-from .renderers.markdown import MarkdownRenderer
+from .fetchers import FetcherRegistry
+from .renderers import (
+    BaseRenderer,
+    HistoricalMarkdownRenderer,
+    MarkdownRenderer,
+    RendererRegistry,
+    RestructuredTextRenderer,
+)
 from .helpers import project_dir
 from .patterns import (
     REGEX_PATTERN_BRANCH_NAME,
@@ -38,7 +44,6 @@ from .patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
-from .registry import Registry
 
 DEBUG = os.environ.get('DEBUG', False)
 
@@ -59,9 +64,6 @@ __all__ = (
     'prepare_releases_changelog',
     'validate_between',
 )
-
-
-
 
 
 def get_repository(path: str = None) -> Git:
@@ -193,7 +195,8 @@ def prepare_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
-    fetch_additional_data: bool = False,
+    fetch_title: bool = False,
+    fetch_description: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -203,6 +206,9 @@ def prepare_changelog(
     :param between:
     :param unique_commit_messages:
     :param headings_only:
+    :param unreleased_only:
+    :param fetch_title:
+    :param fetch_description:
     :param path:
     :return:
     """
@@ -246,16 +252,18 @@ def prepare_changelog(
             branch_title = None
             branch_description = None
             if (
-                fetch_additional_data
+                (fetch_title or fetch_description)
                 and settings.get('fetchDataFrom')
-                and settings.get('fetchDataFrom') in Registry.REGISTRY
+                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
                 and ticket_number != TICKET_NUMBER_OTHER
             ):
-                fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
-                branch_title = fetcher_data['title']
-                branch_description = fetcher_data['description']
+                if fetch_title:
+                    branch_title = fetcher_data['title']
+                if fetch_description:
+                    branch_description = fetcher_data['description']
 
             if not branch_title:
                 branch_title = match.group('branch_title')
@@ -411,7 +419,8 @@ def prepare_releases_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
-    fetch_additional_data: bool = False,
+    fetch_title: bool = False,
+    fetch_description: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -421,6 +430,9 @@ def prepare_releases_changelog(
     :param between:
     :param unique_commit_messages:
     :param headings_only:
+    :param unreleased_only:
+    :param fetch_title:
+    :param fetch_description:
     :param path:
     :return:
     """
@@ -464,16 +476,18 @@ def prepare_releases_changelog(
             branch_description = None
 
             if (
-                fetch_additional_data
+                (fetch_title or fetch_description)
                 and settings.get('fetchDataFrom')
-                and settings.get('fetchDataFrom') in Registry.REGISTRY
+                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
                 and ticket_number != TICKET_NUMBER_OTHER
             ):
-                fetcher_cls = Registry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
-                branch_title = fetcher_data['title']
-                branch_description = fetcher_data['description']
+                if fetch_title:
+                    branch_title = fetcher_data['title']
+                if fetch_description:
+                    branch_description = fetcher_data['description']
 
             if not branch_title:
                 branch_title = match.group('branch_title')
@@ -508,7 +522,7 @@ def prepare_releases_changelog(
         if unreleased_only:
             return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
         return releases_tree
-    
+
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
         try:
@@ -690,7 +704,8 @@ def json_changelog(between: str = None,
                    show_releases: bool = False,
                    latest_release: bool = False,
                    headings_only: bool = False,
-                   show_description: bool = False,
+                   fetch_title: bool = False,
+                   fetch_description: bool = False,
                    path: str = None):
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
@@ -754,11 +769,18 @@ def json_changelog_cli() -> Type[None]:
         help="Generate headings only (no commit messages, only branch titles)",
     )
     parser.add_argument(
-        '--show-description',
-        dest="show_description",
+        '--fetch-title',
+        dest="fetch_title",
         default=False,
         action='store_true',
-        help="Show description",
+        help="Fetch title",
+    )
+    parser.add_argument(
+        '--fetch-description',
+        dest="fetch_description",
+        default=False,
+        action='store_true',
+        help="Fetch description",
     )
 
     args = parser.parse_args(sys.argv[1:])
@@ -767,7 +789,8 @@ def json_changelog_cli() -> Type[None]:
     show_releases = args.show_releases
     latest_release = args.latest_release
     headings_only = args.headings_only
-    show_description = args.show_description
+    fetch_title = args.fetch_title
+    fetch_description = args.fetch_description
 
     print(
         json_changelog(
@@ -776,7 +799,8 @@ def json_changelog_cli() -> Type[None]:
             show_releases=show_releases,
             latest_release=latest_release,
             headings_only=headings_only,
-            show_description=show_description
+            fetch_title=fetch_title,
+            fetch_description=fetch_description
         )
     )
 
@@ -787,7 +811,13 @@ def generate_changelog(between: str = None,
                        latest_release: bool = False,
                        headings_only: bool = False,
                        unreleased_only: bool = False,
-                       show_description: bool = False,
+                       fetch_title: bool = False,
+                       fetch_description: bool = False,
+                       renderer_cls: Union[
+                           Type[HistoricalMarkdownRenderer],
+                           Type[MarkdownRenderer],
+                           Type[RestructuredTextRenderer]
+                       ] = MarkdownRenderer,
                        path: str = None) -> str:
     """Generate changelog (markdown format)."""
 
@@ -802,7 +832,7 @@ def generate_changelog(between: str = None,
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
 
-    renderer = MarkdownRenderer()
+    renderer = renderer_cls()
 
     if not show_releases:
         tree = prepare_changelog(
@@ -810,7 +840,8 @@ def generate_changelog(between: str = None,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
-            fetch_additional_data=show_description,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
             path=path
         )
 
@@ -818,7 +849,7 @@ def generate_changelog(between: str = None,
             tree=tree,
             include_other=include_other,
             headings_only=headings_only,
-            show_description=show_description
+            fetch_description=fetch_description
         )
     else:
         releases_tree = prepare_releases_changelog(
@@ -826,7 +857,8 @@ def generate_changelog(between: str = None,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
-            fetch_additional_data=show_description,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
             path=path
         )
 
@@ -834,7 +866,7 @@ def generate_changelog(between: str = None,
             releases_tree=releases_tree,
             include_other=include_other,
             headings_only=headings_only,
-            show_description=show_description
+            fetch_description=fetch_description
         )
 
 
@@ -882,11 +914,26 @@ def generate_changelog_cli() -> Type[None]:
         help="Show unreleased only. Works in combination with --show-releases",
     )
     parser.add_argument(
-        '--show-description',
-        dest="show_description",
+        '--fetch-title',
+        dest="fetch_title",
         default=False,
         action='store_true',
-        help="Show description",
+        help="Fetch title",
+    )
+    parser.add_argument(
+        '--fetch-description',
+        dest="fetch_description",
+        default=False,
+        action='store_true',
+        help="Fetch description",
+    )
+    parser.add_argument(
+        '--renderer',
+        dest="renderer",
+        default=MarkdownRenderer.uid,
+        action='store',
+        help="Renderer",
+        choices=list(RendererRegistry.REGISTRY.keys())
     )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
@@ -895,7 +942,11 @@ def generate_changelog_cli() -> Type[None]:
     latest_release = args.latest_release
     headings_only = args.headings_only
     unreleased_only = args.unreleased_only
-    show_description = args.show_description
+    fetch_title = args.fetch_title
+    fetch_description = args.fetch_description
+    renderer_uid = args.renderer
+
+    renderer_cls = RendererRegistry.get(renderer_uid, MarkdownRenderer)
 
     print(
         generate_changelog(
@@ -905,7 +956,9 @@ def generate_changelog_cli() -> Type[None]:
             latest_release=latest_release,
             headings_only=headings_only,
             unreleased_only=unreleased_only,
-            show_description=show_description
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
+            renderer_cls=renderer_cls
         )
     )
 

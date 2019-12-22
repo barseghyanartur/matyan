@@ -14,6 +14,10 @@ from ..utils import (
     validate_between,
     get_repository,
 )
+from ..renderers import (
+    HistoricalMarkdownRenderer,
+    RestructuredTextRenderer,
+)
 from ..patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
 )
@@ -64,6 +68,30 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             path=self.test_dir
         ).strip()
         self.assertEqual(res, self.show_releases_out)
+        return res
+
+    @log_info
+    def test_generate_changelog_rst_show_releases(self):
+        """Test generate changelog."""
+        res = generate_changelog(
+            include_other=False,
+            show_releases=True,
+            renderer_cls=RestructuredTextRenderer,
+            path=self.test_dir
+        ).strip()
+        self.assertEqual(res, self.show_releases_rst_out)
+        return res
+
+    @log_info
+    def test_generate_changelog_show_releases_renderer_historical(self):
+        """Test generate changelog."""
+        res = generate_changelog(
+            include_other=False,
+            show_releases=True,
+            renderer_cls=HistoricalMarkdownRenderer,
+            path=self.test_dir
+        ).strip()
+        self.assertEqual(res, self.show_releases_rend_hist_out)
         return res
 
     @log_info
