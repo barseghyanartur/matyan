@@ -42,6 +42,8 @@ Latest stable version on PyPI:
 
 Usage
 =====
+Basic usage
+-----------
 See `Basic concepts <https://matyan.readthedocs.io/en/latest/basic_concepts.html>`_
 section to get impression on possible commit methodology and assumptions taken.
 
@@ -116,6 +118,46 @@ acceptance branch and not yet in master.
 .. code-block:: sh
 
     generate-changelog master..acceptance --show-releases --unreleased-only
+
+Rendering
+---------
+The following renderers are implemented:
+
+- Markdown
+- RestructuredText
+- Historical Markdown (for compatibility with ``matyan`` versions prior to
+  0.4).
+
+Markdown
+~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=markdown
+
+RestructuredText
+~~~~~~~~~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=rest
+
+Historical Markdown
+~~~~~~~~~~~~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=historical-markdown
+
+Jira integration
+----------------
+It's possible to fetch ticket title and description from Jira. In order for it
+to work, you should provide a ``fetch-title`` and ``fetch-description``
+arguments:
+
+.. code-block:: sh
+
+    generate-changelog --show-releases --fetch-title --fetch-description
+
+In adddition to that, you should put valid Jira credentials into your
+global ``.matyan.ini`` configuration file.
 
 Configuration
 =============
