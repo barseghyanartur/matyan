@@ -150,14 +150,23 @@ Jira integration
 ----------------
 It's possible to fetch ticket title and description from Jira. In order for it
 to work, you should provide a ``fetch-title`` and ``fetch-description``
-arguments:
+arguments.
+
+The following needs to be added to your ``.matyan.ini``:
+
+.. code-block:: text
+
+    [Settings]
+    fetchDataFrom=Jira
+
+In addition to that, you should put valid Jira credentials into your
+global ``.matyan.ini`` configuration file.
+
+Command to run:
 
 .. code-block:: sh
 
     generate-changelog --show-releases --fetch-title --fetch-description
-
-In adddition to that, you should put valid Jira credentials into your
-global ``.matyan.ini`` configuration file.
 
 Configuration
 =============
@@ -196,9 +205,9 @@ Sample configuration:
 
 
 Note, that placing ``.matyan.ini`` into the home root will make that
-configuration global for all projects. That's however is handy, since local
-``.matyan.ini`` files simply override the global ones. You could use global
-configuration for instance for storing credentials to Jira.
+configuration global for all projects. That however could be handy, since local
+``.matyan.ini`` files simply override the global ones. For example, you could
+use global configuration for storing Jira credentials.
 
 .. code-block:: text
 
