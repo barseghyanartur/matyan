@@ -6,7 +6,7 @@ try:
 except:
     readme = ''
 
-version = '0.3.4'
+version = '0.4'
 
 setup(
     name='matyan',
@@ -54,7 +54,7 @@ setup(
     install_requires=[
         'GitPython',
     ],
-    test_suite='tld.tests',
+    test_suite='matyan.tests',
     tests_require=[
         'coverage',
         'factory_boy',

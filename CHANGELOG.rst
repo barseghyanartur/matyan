@@ -17,7 +17,7 @@ are used for versioning (schema follows below):
 
 0.4
 ---
-2019-12-20
+2019-12-22
 
 - Placing ``.matyan.ini`` config file (placed in the home root directory
   now makes it a global configuration). File placed locally may override the
