@@ -28,7 +28,10 @@ class JiraFetcher(BaseFetcher):
 
     def fetch_issue_data(self, issue_id: str) -> Dict[str, str]:
         issue = self.instance.issue(issue_id)
-        return {
-            'title': issue['fields']['summary'],
-            'description': issue['fields']['description'],
-        }
+        try:
+            return {
+                'title': issue['fields']['summary'],
+                'description': issue['fields']['description'],
+            }
+        except TypeError as err:
+            return {}

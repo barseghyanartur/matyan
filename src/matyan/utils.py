@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import re
+import logging
 import sys
 from shutil import copyfile
 from typing import Union, Dict, AnyStr, Type, Any, List
@@ -45,6 +46,7 @@ from .patterns import (
     REGEX_PATTERN_TAG,
 )
 
+LOGGER = logging.getLogger(__name__)
 DEBUG = os.environ.get('DEBUG', False)
 
 __author__ = 'Artur Barseghyan'
@@ -260,10 +262,15 @@ def prepare_changelog(
                 fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
-                if fetch_title:
+                if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']
-                if fetch_description:
+                if fetch_description and 'description' in fetcher_data:
                     branch_description = fetcher_data['description']
+            elif (
+                settings.get('fetchDataFrom')
+                and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
+            ):
+                LOGGER.debug(f"settings.get('fetchDataFrom') is not found in the registry!")
 
             if not branch_title:
                 branch_title = match.group('branch_title')
@@ -484,9 +491,9 @@ def prepare_releases_changelog(
                 fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
                 fetcher = fetcher_cls()
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
-                if fetch_title:
+                if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']
-                if fetch_description:
+                if fetch_description and 'description' in fetcher_data:
                     branch_description = fetcher_data['description']
 
             if not branch_title:
