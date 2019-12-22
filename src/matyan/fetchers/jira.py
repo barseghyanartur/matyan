@@ -33,5 +33,5 @@ class JiraFetcher(BaseFetcher):
                 'title': issue['fields']['summary'],
                 'description': issue['fields']['description'],
             }
-        except TypeError as err:
+        except (TypeError, KeyError) as err:
             return {}
