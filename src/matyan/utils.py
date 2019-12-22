@@ -5,21 +5,36 @@ import os
 import re
 import sys
 from shutil import copyfile
-from typing import Union, Dict, AnyStr, Type, Any
+from typing import Union, Dict, AnyStr, Type, Any, List
 from git import Git
 from git.exc import GitCommandError
 
 from .auto_correct import add_final_dot, capitalize, unslugify
+from .constants import PRETTY_FORMAT, TICKET_NUMBER_OTHER
 from .labels import (
-    get_all_branch_types,
-    get_branch_types,
-    get_ignore_commits_exact_words,
+    # get_all_branch_types,
+    # get_branch_types,
+    # get_ignore_commits_exact_words,
     get_ignore_commits_prefixes,
-    get_other_branch_type,
-    get_other_branch_type_key,
+    # get_other_branch_type,
+    # get_other_branch_type_key,
     # get_unreleased,
     # get_unreleased_key,
-    get_unreleased_key_label,
+    # get_unreleased_key_label,
+    get_settings,
+    BRANCH_TYPE_OTHER,
+    BRANCH_TYPES,
+    IGNORE_COMMITS_EXACT_WORDS,
+    UNRELEASED,
+    UNRELEASED_LABEL,
+)
+from .fetchers import FetcherRegistry
+from .renderers import (
+    BaseRenderer,
+    HistoricalMarkdownRenderer,
+    MarkdownRenderer,
+    RendererRegistry,
+    RestructuredTextRenderer,
 )
 from .helpers import project_dir
 from .patterns import (
@@ -49,31 +64,6 @@ __all__ = (
     'prepare_releases_changelog',
     'validate_between',
 )
-
-PRETTY_FORMAT = '{' \
-                '"commit_hash": "%H", ' \
-                '"commit_abbr": "%h", ' \
-                '"datetime": "%ci", ' \
-                '"title": "%s",' \
-                '"author": "%an", ' \
-                '"author_email": "%ae", ' \
-                '"merge": "%P"' \
-                '}'
-
-BRANCH_TYPE_OTHER = get_other_branch_type_key()  # 'other'
-BRANCH_TYPES = get_all_branch_types()
-# BRANCH_TYPES = {
-#     'other': "Other",
-#     'feature': "Features",
-#     'bugfix': "Bugfixes",
-#     'hotfix': "Hotfixes",
-#     'deprecation': "Deprecations",
-# }
-TICKET_NUMBER_OTHER = 'other'
-# UNRELEASED = 'unreleased'
-UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
-
-IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()
 
 
 def get_repository(path: str = None) -> Git:
@@ -205,6 +195,8 @@ def prepare_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
+    fetch_title: bool = False,
+    fetch_description: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -214,6 +206,9 @@ def prepare_changelog(
     :param between:
     :param unique_commit_messages:
     :param headings_only:
+    :param unreleased_only:
+    :param fetch_title:
+    :param fetch_description:
     :param path:
     :return:
     """
@@ -225,6 +220,8 @@ def prepare_changelog(
     branch_types = {}
 
     logs = get_logs(between=between, path=path)
+
+    settings = get_settings()
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
@@ -252,7 +249,24 @@ def prepare_changelog(
             except AttributeError:
                 ticket_number = TICKET_NUMBER_OTHER
 
-            branch_title = match.group('branch_title')
+            branch_title = None
+            branch_description = None
+            if (
+                (fetch_title or fetch_description)
+                and settings.get('fetchDataFrom')
+                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
+                and ticket_number != TICKET_NUMBER_OTHER
+            ):
+                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher = fetcher_cls()
+                fetcher_data = fetcher.fetch_issue_data(ticket_number)
+                if fetch_title:
+                    branch_title = fetcher_data['title']
+                if fetch_description:
+                    branch_description = fetcher_data['description']
+
+            if not branch_title:
+                branch_title = match.group('branch_title')
 
             # For normal tree
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
@@ -269,6 +283,7 @@ def prepare_changelog(
                     'branch_type': branch_type,
                     'slug': branch_title,
                     'title': unslugify(branch_title),
+                    'description': branch_description,
                     'commits': {},
                     'release': release,
                 }
@@ -404,6 +419,8 @@ def prepare_releases_changelog(
     unique_commit_messages: bool = False,
     headings_only: bool = False,
     unreleased_only: bool = False,
+    fetch_title: bool = False,
+    fetch_description: bool = False,
     path: str = None
 ) -> Dict[
         str, Dict[str, Dict[str, Union[str, Dict[str, Union[str, str]]]]]
@@ -413,10 +430,14 @@ def prepare_releases_changelog(
     :param between:
     :param unique_commit_messages:
     :param headings_only:
+    :param unreleased_only:
+    :param fetch_title:
+    :param fetch_description:
     :param path:
     :return:
     """
     logs = get_logs(between=between, path=path)
+    settings = get_settings()
     # releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
     # releases_tree = {tag: generate_empty_tree() for tag in releases}
     releases_tree = {}
@@ -451,7 +472,25 @@ def prepare_releases_changelog(
             except AttributeError:
                 ticket_number = TICKET_NUMBER_OTHER
 
-            branch_title = match.group('branch_title')
+            branch_title = None
+            branch_description = None
+
+            if (
+                (fetch_title or fetch_description)
+                and settings.get('fetchDataFrom')
+                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
+                and ticket_number != TICKET_NUMBER_OTHER
+            ):
+                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
+                fetcher = fetcher_cls()
+                fetcher_data = fetcher.fetch_issue_data(ticket_number)
+                if fetch_title:
+                    branch_title = fetcher_data['title']
+                if fetch_description:
+                    branch_description = fetcher_data['description']
+
+            if not branch_title:
+                branch_title = match.group('branch_title')
 
             # For normal tree
             release = logs['COMMIT_TAGS'].get(entry['commit_abbr'])
@@ -473,6 +512,7 @@ def prepare_releases_changelog(
                     'branch_type': branch_type,
                     'slug': branch_title,
                     'title': unslugify(branch_title),
+                    'description': branch_description,
                     'commits': {},
                     'release': release,
                 }
@@ -482,7 +522,7 @@ def prepare_releases_changelog(
         if unreleased_only:
             return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
         return releases_tree
-    
+
     # Now go through commits
     for json_entry in filter(None, logs['LOG']):
         try:
@@ -664,6 +704,8 @@ def json_changelog(between: str = None,
                    show_releases: bool = False,
                    latest_release: bool = False,
                    headings_only: bool = False,
+                   fetch_title: bool = False,
+                   fetch_description: bool = False,
                    path: str = None):
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
@@ -726,12 +768,29 @@ def json_changelog_cli() -> Type[None]:
         action='store_true',
         help="Generate headings only (no commit messages, only branch titles)",
     )
+    parser.add_argument(
+        '--fetch-title',
+        dest="fetch_title",
+        default=False,
+        action='store_true',
+        help="Fetch title",
+    )
+    parser.add_argument(
+        '--fetch-description',
+        dest="fetch_description",
+        default=False,
+        action='store_true',
+        help="Fetch description",
+    )
+
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
     show_releases = args.show_releases
     latest_release = args.latest_release
     headings_only = args.headings_only
+    fetch_title = args.fetch_title
+    fetch_description = args.fetch_description
 
     print(
         json_changelog(
@@ -739,7 +798,9 @@ def json_changelog_cli() -> Type[None]:
             include_other=include_other,
             show_releases=show_releases,
             latest_release=latest_release,
-            headings_only=headings_only
+            headings_only=headings_only,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description
         )
     )
 
@@ -750,6 +811,13 @@ def generate_changelog(between: str = None,
                        latest_release: bool = False,
                        headings_only: bool = False,
                        unreleased_only: bool = False,
+                       fetch_title: bool = False,
+                       fetch_description: bool = False,
+                       renderer_cls: Union[
+                           Type[HistoricalMarkdownRenderer],
+                           Type[MarkdownRenderer],
+                           Type[RestructuredTextRenderer]
+                       ] = MarkdownRenderer,
                        path: str = None) -> str:
     """Generate changelog (markdown format)."""
 
@@ -764,7 +832,7 @@ def generate_changelog(between: str = None,
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
 
-    changelog = []
+    renderer = renderer_cls()
 
     if not show_releases:
         tree = prepare_changelog(
@@ -772,112 +840,34 @@ def generate_changelog(between: str = None,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
             path=path
         )
-        for branch_type, tickets in tree.items():
-            # Skip adding orphaned commits if explicitly asked not to.
-            if branch_type == BRANCH_TYPE_OTHER and not include_other:
-                continue
 
-            # Do not add branch type if no related branches found
-            if not tickets:
-                continue
-
-            if BRANCH_TYPES.get(branch_type):
-                changelog.append(
-                    "\n**{}**{}".format(
-                        BRANCH_TYPES.get(branch_type),
-                        '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                    )
-                )
-
-            # Add tickets
-            for ticket_number, ticket_data in tickets.items():
-                if 'title' not in ticket_data:
-                    continue
-
-                if branch_type != BRANCH_TYPE_OTHER:
-                    changelog.append(
-                        "\n*{} {}*".format(
-                            ticket_number,
-                            ticket_data['title']
-                        )
-                    )
-
-                if headings_only:
-                    continue
-
-                counter = 0
-                for commit_hash, commit_data in ticket_data['commits'].items():
-                    changelog.append(
-                        "{}- {} [{}]".format(
-                            '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                            commit_data['title'],
-                            commit_data['author']
-                        )
-                    )
-                    counter = counter + 1
+        return renderer.render_changelog(
+            tree=tree,
+            include_other=include_other,
+            headings_only=headings_only,
+            fetch_description=fetch_description
+        )
     else:
         releases_tree = prepare_releases_changelog(
             between=between,
             unique_commit_messages=True,
             headings_only=headings_only,
             unreleased_only=unreleased_only and show_releases,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
             path=path
         )
 
-        for release, branches in releases_tree.items():
-            release_label = UNRELEASED_LABEL \
-                if release == UNRELEASED \
-                else release
-
-            changelog.append("\n### {}".format(release_label))
-            for branch_type, tickets in branches.items():
-
-                # Skip adding orphaned commits if explicitly asked not to.
-                if branch_type == BRANCH_TYPE_OTHER and not include_other:
-                    continue
-
-                # Do not add branch type if no related branches found
-                if not tickets:
-                    continue
-
-                if BRANCH_TYPES.get(branch_type):
-                    changelog.append(
-                        "\n**{}**{}".format(
-                            BRANCH_TYPES.get(branch_type),
-                            '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                        )
-                    )
-
-                # Add tickets
-                for ticket_number, ticket_data in tickets.items():
-                    if 'title' not in ticket_data:
-                        continue
-
-                    if branch_type != BRANCH_TYPE_OTHER:
-                        changelog.append(
-                            "\n*{} {}*".format(
-                                ticket_number,
-                                ticket_data['title']
-                            )
-                        )
-
-                    if headings_only:
-                        continue
-
-                    counter = 0
-                    for commit_hash, commit_data in ticket_data['commits'].items():  # NOQA
-                        changelog.append(
-                            "{}- {} [{}]".format(
-                                '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                                commit_data['title'],
-                                commit_data['author']
-                            )
-                        )
-                        counter = counter + 1
-
-    return '\n'.join(changelog)
+        return renderer.render_releases_changelog(
+            releases_tree=releases_tree,
+            include_other=include_other,
+            headings_only=headings_only,
+            fetch_description=fetch_description
+        )
 
 
 def generate_changelog_cli() -> Type[None]:
@@ -923,6 +913,28 @@ def generate_changelog_cli() -> Type[None]:
         action='store_true',
         help="Show unreleased only. Works in combination with --show-releases",
     )
+    parser.add_argument(
+        '--fetch-title',
+        dest="fetch_title",
+        default=False,
+        action='store_true',
+        help="Fetch title",
+    )
+    parser.add_argument(
+        '--fetch-description',
+        dest="fetch_description",
+        default=False,
+        action='store_true',
+        help="Fetch description",
+    )
+    parser.add_argument(
+        '--renderer',
+        dest="renderer",
+        default=MarkdownRenderer.uid,
+        action='store',
+        help="Renderer",
+        choices=list(RendererRegistry.REGISTRY.keys())
+    )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
@@ -930,6 +942,11 @@ def generate_changelog_cli() -> Type[None]:
     latest_release = args.latest_release
     headings_only = args.headings_only
     unreleased_only = args.unreleased_only
+    fetch_title = args.fetch_title
+    fetch_description = args.fetch_description
+    renderer_uid = args.renderer
+
+    renderer_cls = RendererRegistry.get(renderer_uid, MarkdownRenderer)
 
     print(
         generate_changelog(
@@ -938,7 +955,10 @@ def generate_changelog_cli() -> Type[None]:
             show_releases=show_releases,
             latest_release=latest_release,
             headings_only=headings_only,
-            unreleased_only=unreleased_only
+            unreleased_only=unreleased_only,
+            fetch_title=fetch_title,
+            fetch_description=fetch_description,
+            renderer_cls=renderer_cls
         )
     )
 

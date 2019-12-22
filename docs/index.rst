@@ -42,6 +42,8 @@ Latest stable version on PyPI:
 
 Usage
 =====
+Basic usage
+-----------
 See `Basic concepts <https://matyan.readthedocs.io/en/latest/basic_concepts.html>`_
 section to get impression on possible commit methodology and assumptions taken.
 
@@ -117,6 +119,46 @@ acceptance branch and not yet in master.
 
     generate-changelog master..acceptance --show-releases --unreleased-only
 
+Rendering
+---------
+The following renderers are implemented:
+
+- Markdown
+- RestructuredText
+- Historical Markdown (for compatibility with ``matyan`` versions prior to
+  0.4).
+
+Markdown
+~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=markdown
+
+RestructuredText
+~~~~~~~~~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=rest
+
+Historical Markdown
+~~~~~~~~~~~~~~~~~~~
+.. code-block:: sh
+
+    generate-changelog --show-releases --renderer=historical-markdown
+
+Jira integration
+----------------
+It's possible to fetch ticket title and description from Jira. In order for it
+to work, you should provide a ``fetch-title`` and ``fetch-description``
+arguments:
+
+.. code-block:: sh
+
+    generate-changelog --show-releases --fetch-title --fetch-description
+
+In adddition to that, you should put valid Jira credentials into your
+global ``.matyan.ini`` configuration file.
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your
@@ -152,6 +194,18 @@ Sample configuration:
     prefix: more on
             continue on
 
+
+Note, that placing ``.matyan.ini`` into the home root will make that
+configuration global for all projects. That's however is handy, since local
+``.matyan.ini`` files simply override the global ones. You could use global
+configuration for instance for storing credentials to Jira.
+
+.. code-block:: text
+
+    [Jira]
+    url:https://barseghyanartur.atlassian.net/
+    username:user@domain.com
+    token:abcd1234
 
 Tips and tricks
 ===============

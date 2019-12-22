@@ -1,3 +1,4 @@
+from configparser import SectionProxy
 from typing import Union, Dict, AnyStr, Type, List
 
 from .config import CONFIG
@@ -6,15 +7,21 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
 __all__ = (
+    # 'get_unreleased',
+    # 'get_unreleased_key',
+    'BRANCH_TYPE_OTHER',
+    'BRANCH_TYPES',
     'get_all_branch_types',
     'get_branch_types',
     'get_ignore_commits_exact_words',
     'get_ignore_commits_prefixes',
     'get_other_branch_type',
     'get_other_branch_type_key',
-    # 'get_unreleased',
-    # 'get_unreleased_key',
+    'get_settings',
     'get_unreleased_key_label',
+    'IGNORE_COMMITS_EXACT_WORDS',
+    'UNRELEASED',
+    'UNRELEASED_LABEL',
 )
 
 
@@ -24,6 +31,13 @@ def get_branch_types() -> Dict[str, str]:
     :return:
     """
     return dict(CONFIG['BranchTypes'])
+
+
+def get_settings() -> SectionProxy:
+    try:
+        return CONFIG['Settings']
+    except KeyError:
+        return {}
 
 
 def get_other_branch_type() -> Dict[str, str]:
@@ -84,3 +98,21 @@ def get_ignore_commits_prefixes() -> List[str]:
     :return:
     """
     return CONFIG['IgnoreCommits']['prefix'].split('\n')
+
+# Constants
+
+
+BRANCH_TYPE_OTHER = get_other_branch_type_key()  # 'other'
+BRANCH_TYPES = get_all_branch_types()
+# BRANCH_TYPES = {
+#     'other': "Other",
+#     'feature': "Features",
+#     'bugfix': "Bugfixes",
+#     'hotfix': "Hotfixes",
+#     'deprecation': "Deprecations",
+# }
+
+# UNRELEASED = 'unreleased'
+UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
+
+IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()

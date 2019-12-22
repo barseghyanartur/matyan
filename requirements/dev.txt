@@ -1,5 +1,6 @@
 -r base.txt
 -r build.txt
+-r extras.txt
 -r code_style.txt
 -r debug.txt
 -r docs.txt

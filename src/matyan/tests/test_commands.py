@@ -47,6 +47,30 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
         return res
 
     @log_info
+    def test_generate_changelog_show_releases_rst(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output([
+            'generate-changelog',
+            '--show-releases',
+            '--no-other',
+            '--renderer=rest'
+        ]).strip().decode()
+        self.assertEqual(res, self.show_releases_rst_out)
+        return res
+
+    @log_info
+    def test_generate_changelog_show_releases_renderer_historical(self):
+        """Test generate changelog command."""
+        res = subprocess.check_output([
+            'generate-changelog',
+            '--show-releases',
+            '--no-other',
+            '--renderer=historical-markdown'
+        ]).strip().decode()
+        self.assertEqual(res, self.show_releases_rend_hist_out)
+        return res
+
+    @log_info
     def test_generate_changelog_show_releases_latest_release(self):
         """Test generate changelog command."""
         res = subprocess.check_output([
