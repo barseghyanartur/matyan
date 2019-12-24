@@ -29,7 +29,7 @@ from .labels import (
     UNRELEASED,
     UNRELEASED_LABEL,
 )
-from .fetchers import FetcherRegistry
+from .fetchers import FetcherRegistry, BaseFetcher
 from .renderers import (
     BaseRenderer,
     HistoricalMarkdownRenderer,
@@ -214,16 +214,30 @@ def prepare_changelog(
     :param path:
     :return:
     """
-    # tree = generate_empty_tree()
+    logs = get_logs(between=between, path=path)
+    settings = get_settings()
     tree = {}
 
     cur_branch = None
     cur_branch_type = None
     branch_types = {}
 
-    logs = get_logs(between=between, path=path)
+    fetcher = None
 
-    settings = get_settings()
+    if (
+        (fetch_title or fetch_description)
+        and settings.get('fetchDataFrom')
+        and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
+    ):
+        fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
+        fetcher = fetcher_cls()
+    elif (
+        settings.get('fetchDataFrom')
+        and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
+    ):
+        LOGGER.debug(
+            f"settings.get('fetchDataFrom') is not found in the registry!"
+        )
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
@@ -253,24 +267,12 @@ def prepare_changelog(
 
             branch_title = None
             branch_description = None
-            if (
-                (fetch_title or fetch_description)
-                and settings.get('fetchDataFrom')
-                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
-                and ticket_number != TICKET_NUMBER_OTHER
-            ):
-                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
-                fetcher = fetcher_cls()
+            if fetcher is not None and ticket_number != TICKET_NUMBER_OTHER:
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
                 if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']
                 if fetch_description and 'description' in fetcher_data:
                     branch_description = fetcher_data['description']
-            elif (
-                settings.get('fetchDataFrom')
-                and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
-            ):
-                LOGGER.debug(f"settings.get('fetchDataFrom') is not found in the registry!")
 
             if not branch_title:
                 branch_title = match.group('branch_title')
@@ -445,13 +447,28 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between, path=path)
     settings = get_settings()
-    # releases = [UNRELEASED] + [tag for tag in logs['COMMIT_TAGS'].values()]
-    # releases_tree = {tag: generate_empty_tree() for tag in releases}
     releases_tree = {}
 
     cur_branch = None
     cur_branch_type = None
     branch_types = {}
+
+    fetcher = None
+
+    if (
+        (fetch_title or fetch_description)
+        and settings.get('fetchDataFrom')
+        and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
+    ):
+        fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
+        fetcher = fetcher_cls()
+    elif (
+        settings.get('fetchDataFrom')
+        and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
+    ):
+        LOGGER.debug(
+            f"settings.get('fetchDataFrom') is not found in the registry!"
+        )
 
     # First fill feature branches only
     for json_entry in logs['LOG_MERGES']:
@@ -482,14 +499,7 @@ def prepare_releases_changelog(
             branch_title = None
             branch_description = None
 
-            if (
-                (fetch_title or fetch_description)
-                and settings.get('fetchDataFrom')
-                and settings.get('fetchDataFrom') in FetcherRegistry.REGISTRY
-                and ticket_number != TICKET_NUMBER_OTHER
-            ):
-                fetcher_cls = FetcherRegistry.REGISTRY[settings.get('fetchDataFrom')]
-                fetcher = fetcher_cls()
+            if fetcher is not None and ticket_number != TICKET_NUMBER_OTHER:
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
                 if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']

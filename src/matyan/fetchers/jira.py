@@ -1,8 +1,11 @@
+import logging
 from typing import Dict
 
 from atlassian import Jira
 
 from .base import BaseFetcher
+
+LOGGER = logging.getLogger(__name__)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -27,11 +30,16 @@ class JiraFetcher(BaseFetcher):
         )
 
     def fetch_issue_data(self, issue_id: str) -> Dict[str, str]:
-        issue = self.instance.issue(issue_id)
+        if not self.should_continue():
+            LOGGER.debug("Skip after number of retries reached")
+            return {}
+
         try:
+            issue = self.instance.issue(issue_id)
             return {
                 'title': issue['fields']['summary'],
                 'description': issue['fields']['description'],
             }
-        except (TypeError, KeyError) as err:
+        except (TypeError, KeyError, IOError) as err:
+            self.register_error()
             return {}

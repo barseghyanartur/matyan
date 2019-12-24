@@ -15,6 +15,14 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.4.1
+-----
+2019-12-24
+
+- Prevent errors and infinite wait time on faulty connections (when fetching
+  data from Jira).
+- Minor speed ups.
+
 0.4
 ---
 2019-12-22

@@ -168,6 +168,12 @@ Command to run:
 
     generate-changelog --show-releases --fetch-title --fetch-description
 
+Examples
+--------
+See the
+`output <https://github.com/barseghyanartur/matyan/tree/master/src/matyan/tests/output>`_
+directory for examples.
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your

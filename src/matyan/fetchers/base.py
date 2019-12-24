@@ -22,6 +22,8 @@ class BaseFetcher(metaclass=FetcherRegistry):
 
     uid: str = None
     instance: Type
+    retries: int = 0
+    max_retries: int = 10
 
     def __init__(self, *args, **kwargs):
         if not self.uid:
@@ -37,3 +39,9 @@ class BaseFetcher(metaclass=FetcherRegistry):
 
     def fetch_issue_data(self, issue_id: str) -> Dict[str, str]:
         raise NotImplementedError
+
+    def should_continue(self) -> bool:
+        return self.retries < self.max_retries
+
+    def register_error(self) -> None:
+        self.retries += 1
