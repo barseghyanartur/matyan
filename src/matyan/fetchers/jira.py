@@ -1,4 +1,3 @@
-import logging
 from typing import Dict
 
 from atlassian import Jira
@@ -30,7 +29,9 @@ class JiraFetcher(BaseFetcher):
 
     def fetch_issue_data(self, issue_id: str) -> Dict[str, str]:
         if not self.should_continue():
-            LOGGER.error("Skip after number of retries reached")
+            LOGGER.error(
+                f"Skip {issue_id} after global number of retries reached"
+            )
             return {}
 
         try:
