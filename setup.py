@@ -6,7 +6,7 @@ try:
 except:
     readme = ''
 
-version = '0.4.1'
+version = '0.4.2'
 
 setup(
     name='matyan',
@@ -50,7 +50,7 @@ setup(
         'jira':  ["atlassian-python-api"],
     },
     include_package_data=True,
-    license='GPL-2.0-only OR LGPL-2.0-or-later',
+    license='GPL-2.0-only OR LGPL-2.1-or-later',
     install_requires=[
         'GitPython',
     ],

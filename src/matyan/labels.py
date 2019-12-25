@@ -5,7 +5,7 @@ from .config import CONFIG
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
-__license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
+__license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
     # 'get_unreleased',
     # 'get_unreleased_key',
@@ -89,7 +89,10 @@ def get_ignore_commits_exact_words() -> List[str]:
 
     :return:
     """
-    return CONFIG['IgnoreCommits']['exact'].split('\n')
+    try:
+        return CONFIG['IgnoreCommits']['exact'].split('\n')
+    except KeyError:
+        return []
 
 
 def get_ignore_commits_prefixes() -> List[str]:
@@ -97,7 +100,10 @@ def get_ignore_commits_prefixes() -> List[str]:
 
     :return:
     """
-    return CONFIG['IgnoreCommits']['prefix'].split('\n')
+    try:
+        return CONFIG['IgnoreCommits']['prefix'].split('\n')
+    except KeyError:
+        return []
 
 # Constants
 

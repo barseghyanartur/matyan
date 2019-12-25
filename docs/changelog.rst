@@ -15,6 +15,14 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.4.2
+-----
+2019-12-25
+
+- Minor speed-ups.
+- Fix minor rendering issue with occasionally lost comments.
+- Add logging.
+
 0.4.1
 -----
 2019-12-24

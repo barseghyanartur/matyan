@@ -50,7 +50,7 @@ DEBUG = os.environ.get('DEBUG', False)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
-__license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
+__license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
     'generate_changelog',
     'generate_changelog_cli',
@@ -221,6 +221,8 @@ def prepare_changelog(
     cur_branch_type = None
     branch_types = {}
 
+    ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
+
     fetcher = None
 
     if (
@@ -348,7 +350,6 @@ def prepare_changelog(
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
-            ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
             if commit_message.lower().startswith(ignore_commits_prefixes):
                 continue
 
@@ -456,6 +457,12 @@ def prepare_releases_changelog(
     cur_branch_type = None
     branch_types = {}
 
+    ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
+
+    # LOGGER.warning('ignore_commits_prefixes')
+    # LOGGER.warning(ignore_commits_prefixes)
+    # LOGGER.warning('END ignore_commits_prefixes')
+
     fetcher = None
 
     if (
@@ -551,6 +558,9 @@ def prepare_releases_changelog(
     for json_entry in filter(None, logs['LOG']):
         try:
             entry = json.loads(json_entry)
+            # LOGGER.warning('entry')
+            # LOGGER.warning(entry)
+            # LOGGER.warning('END entry')
         except json.decoder.JSONDecodeError:
             continue  # TODO: fix this (when commit message contains " symbols)
 
@@ -592,7 +602,6 @@ def prepare_releases_changelog(
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
-            ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
             if commit_message.lower().startswith(ignore_commits_prefixes):
                 continue
 

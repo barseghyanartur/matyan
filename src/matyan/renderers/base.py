@@ -2,11 +2,12 @@ from typing import Dict, Type, List
 
 from ..config import CONFIG
 from ..labels import BRANCH_TYPES, BRANCH_TYPE_OTHER, UNRELEASED_LABEL, UNRELEASED
+from ..logger import LOGGER
 from ..registry import Registry
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
-__license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
+__license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
     'BaseRenderer',
     'RendererRegistry',
@@ -183,8 +184,16 @@ class BaseRenderer(AbstractRenderer):
 
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
-                    if 'title' not in ticket_data:
-                        continue
+                    # TODO: Investigate why this needs to be here at all?
+                    # if 'title' not in ticket_data:
+                    #     LOGGER.warning('NO title in ticket_data')
+                    #     LOGGER.warning(ticket_number)
+                    #     LOGGER.warning(ticket_data)
+                    #     # continue
+                    # else:
+                    #     LOGGER.warning('title IS in ticket_data')
+                    #     LOGGER.warning(ticket_number)
+                    #     LOGGER.warning(ticket_data)
 
                     if branch_type != BRANCH_TYPE_OTHER:
                         # Ticket name `append_ticket_title`

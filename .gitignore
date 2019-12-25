@@ -121,3 +121,4 @@ deb_dist/
 
 profile.cprof
 pycallgraph.png
+src/matyan/matyan.log.*

@@ -168,6 +168,18 @@ Command to run:
 
     generate-changelog --show-releases --fetch-title --fetch-description
 
+Have in mind, that ``matyan`` shall be installed with ``jira`` option.
+
+.. code-block:: sh
+
+    pip install matyan[jira]
+
+Alternatively, make sure ``atlassian-python-api`` is installed.
+
+.. code-block:: sh
+
+    pip install atlassian-python-api
+
 Examples
 --------
 See the
@@ -177,7 +189,7 @@ directory for examples.
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your
-project directory, form which you will be running the ``generate-changelog``
+project directory, from which you will be running the ``generate-changelog``
 command.
 
 Sample configuration:
@@ -255,7 +267,65 @@ Or use tox to check specific env:
 
 .. code-block:: sh
 
-    tox -e py36
+    tox -e py38
+
+Debugging
+=========
+Sometimes checking logs could be handy. ``Matyan`` logs are stored in the
+directory, from which you are running the ``generate-changelog`` (or any
+other ``Matyan``) command.
+
+.. code-block:: sh
+
+    tail -f /path/to/your/matyan.log
+
+If you want to modify current logging, use ``MATYAN_LOGGING_CONFIG``
+environment variable.
+
+Default configuration:
+
+.. code-block:: python
+
+    DEFAULT_LOGGING_CONFIG = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['file'],
+        },
+        'formatters': {
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process:d} {thread:d} '
+                          '{message}',
+                'style': '{',
+            },
+            'simple': {
+                'format': '{levelname} {message}',
+                'style': '{',
+            },
+        },
+        'handlers': {
+            'console': {
+                'level': 'WARNING',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+            },
+            'file': {
+                'level': 'WARNING',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(os.getcwd(), "matyan.log"),
+                'maxBytes': 1048576,
+                'backupCount': 99,
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'matyan': {
+                'handlers': ['file'],
+                'propagate': True,
+            },
+        },
+    }
 
 Writing documentation
 =====================

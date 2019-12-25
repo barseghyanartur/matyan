@@ -2,11 +2,9 @@ import json
 import os
 from logging import config, getLogger
 
-from .helpers import project_dir
-
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
-__license__ = 'GPL-2.0-only OR LGPL-2.0-or-later'
+__license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
     'LOGGER',
 )
@@ -38,7 +36,7 @@ DEFAULT_LOGGING_CONFIG = {
         'file': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': project_dir("matyan.log"),
+            'filename': os.path.join(os.getcwd(), "matyan.log"),
             'maxBytes': 1048576,
             'backupCount': 99,
             'formatter': 'verbose',
@@ -49,7 +47,7 @@ DEFAULT_LOGGING_CONFIG = {
             'handlers': ['file'],
             'propagate': True,
         },
-    }
+    },
 }
 
 LOGGING_CONFIG_STR = os.environ.get('MATYAN_LOGGING_CONFIG', "")
