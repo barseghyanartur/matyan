@@ -45,8 +45,8 @@ from .patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
+from .logger import LOGGER
 
-LOGGER = logging.getLogger(__name__)
 DEBUG = os.environ.get('DEBUG', False)
 
 __author__ = 'Artur Barseghyan'
@@ -235,7 +235,7 @@ def prepare_changelog(
         settings.get('fetchDataFrom')
         and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
     ):
-        LOGGER.debug(
+        LOGGER.warning(
             f"settings.get('fetchDataFrom') is not found in the registry!"
         )
 
@@ -466,7 +466,7 @@ def prepare_releases_changelog(
         settings.get('fetchDataFrom')
         and settings.get('fetchDataFrom') not in FetcherRegistry.REGISTRY
     ):
-        LOGGER.debug(
+        LOGGER.warning(
             f"settings.get('fetchDataFrom') is not found in the registry!"
         )
 
