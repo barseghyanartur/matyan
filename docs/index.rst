@@ -186,6 +186,8 @@ See the
 `output <https://github.com/barseghyanartur/matyan/tree/master/src/matyan/tests/output>`_
 directory for examples.
 
+Additionally see the `Jupyter notebook examples <https://github.com/barseghyanartur/matyan/blob/master/matyan.ipynb>`_.
+
 Configuration
 =============
 In order to customize names and texts, add a ``.matyan.ini`` in your
