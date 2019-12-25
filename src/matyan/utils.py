@@ -266,7 +266,11 @@ def prepare_changelog(
 
             branch_title = None
             branch_description = None
-            if fetcher is not None and ticket_number != TICKET_NUMBER_OTHER:
+            if (
+                fetcher is not None
+                and ticket_number
+                and ticket_number != TICKET_NUMBER_OTHER
+            ):
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
                 if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']
@@ -498,7 +502,11 @@ def prepare_releases_changelog(
             branch_title = None
             branch_description = None
 
-            if fetcher is not None and ticket_number != TICKET_NUMBER_OTHER:
+            if (
+                fetcher is not None
+                and ticket_number
+                and ticket_number != TICKET_NUMBER_OTHER
+            ):
                 fetcher_data = fetcher.fetch_issue_data(ticket_number)
                 if fetch_title and 'title' in fetcher_data:
                     branch_title = fetcher_data['title']
