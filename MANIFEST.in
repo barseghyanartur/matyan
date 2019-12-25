@@ -5,3 +5,8 @@ include CREDITS.rst
 include LICENSE_GPL2.0.txt
 include LICENSE_LGPL_2.1.txt
 graft docs/
+
+recursive-exclude matyan/tests/matyan-testing/.git/ *
+recursive-exclude matyan/tests/matyan-testing/htmlcov/ *
+recursive-exclude matyan/tests/matyan-testing-jira-integration/.git/ *
+recursive-exclude matyan/tests/matyan-testing-jira-integration/htmlcov/ *
