@@ -1,4 +1,5 @@
 import argparse
+from collections import OrderedDict
 import copy
 import json
 import os
@@ -451,7 +452,10 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between, path=path)
     settings = get_settings()
-    releases_tree = {}
+    # releases_tree = {}
+    releases_tree = OrderedDict(
+        {_t: {} for _, _t in logs['COMMIT_TAGS'].items()}
+    )
 
     cur_branch = None
     cur_branch_type = None
@@ -687,6 +691,9 @@ def prepare_releases_changelog(
                     'title': commit_message,
                 }
 
+    if UNRELEASED in releases_tree:
+        releases_tree.move_to_end(UNRELEASED, last=False)
+
     if unreleased_only:
         return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
 
@@ -740,11 +747,13 @@ def json_changelog(between: str = None,
                    fetch_title: bool = False,
                    fetch_description: bool = False,
                    path: str = None):
+    throw_tag = None
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
         latest_two_releases = latest_two_releases[::-1]
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
+            throw_tag = latest_two_releases[0]
 
     if not show_releases:
         tree = prepare_changelog(
@@ -761,6 +770,8 @@ def json_changelog(between: str = None,
             headings_only=headings_only,
             path=path
         )
+        if latest_release:
+            releases_tree.pop(throw_tag, None)
         return releases_tree
 
 
@@ -825,17 +836,16 @@ def json_changelog_cli() -> Type[None]:
     fetch_title = args.fetch_title
     fetch_description = args.fetch_description
 
-    print(
-        json_changelog(
-            between=between,
-            include_other=include_other,
-            show_releases=show_releases,
-            latest_release=latest_release,
-            headings_only=headings_only,
-            fetch_title=fetch_title,
-            fetch_description=fetch_description
-        )
+    changelog = json_changelog(
+        between=between,
+        include_other=include_other,
+        show_releases=show_releases,
+        latest_release=latest_release,
+        headings_only=headings_only,
+        fetch_title=fetch_title,
+        fetch_description=fetch_description
     )
+    print(dict(changelog))
 
 
 def generate_changelog(between: str = None,
@@ -859,11 +869,13 @@ def generate_changelog(between: str = None,
     #         "--show-latest-release can't be used in combination with specific"
     #         "tags/commits/branches range."
     #     )
+    throw_tag = None
     if latest_release:
         latest_two_releases = get_latest_releases(limit=2, path=path)
         latest_two_releases = latest_two_releases[::-1]
         if len(latest_two_releases):
             between = '..'.join(latest_two_releases)
+            throw_tag = latest_two_releases[0]
 
     renderer = renderer_cls()
 
@@ -894,6 +906,8 @@ def generate_changelog(between: str = None,
             fetch_description=fetch_description,
             path=path
         )
+        if latest_release:
+            releases_tree.pop(throw_tag, None)
 
         return renderer.render_releases_changelog(
             releases_tree=releases_tree,
