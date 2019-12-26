@@ -8,5 +8,5 @@ rm -rf build/
 rm -rf builddocs/
 rm -rf dist/
 rm -rf deb_dist/
-rm src/jira-git-changelog.egg-info -rf
+rm src/matyan.egg-info -rf
 rm builddocs.zip -rf
