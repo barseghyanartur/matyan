@@ -15,6 +15,16 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.4.3
+-----
+2019-12-26
+
+- Ensure correct order of releases.
+- Exclude unnecessary data from distribution.
+- Add Jupyter notebook examples.
+- Introduce debug mode (turned off by default). At the moment, logging is
+  used in debug mode only.
+
 0.4.2
 -----
 2019-12-25

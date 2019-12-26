@@ -982,6 +982,13 @@ def generate_changelog_cli() -> Type[None]:
         help="Renderer",
         choices=list(RendererRegistry.REGISTRY.keys())
     )
+    # parser.add_argument(
+    #     '--debug',
+    #     dest="debug",
+    #     default=False,
+    #     action='store_true',
+    #     help="Enable debug mode",
+    # )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
@@ -992,6 +999,7 @@ def generate_changelog_cli() -> Type[None]:
     fetch_title = args.fetch_title
     fetch_description = args.fetch_description
     renderer_uid = args.renderer
+    # debug = args.debug
 
     renderer_cls = RendererRegistry.get(renderer_uid, MarkdownRenderer)
 

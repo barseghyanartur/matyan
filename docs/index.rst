@@ -226,7 +226,7 @@ Sample configuration:
 
 Note, that placing ``.matyan.ini`` into the home root will make that
 configuration global for all projects. That however could be handy, since local
-``.matyan.ini`` files simply override the global ones. For example, you could
+``.matyan.ini`` files simply extend the global ones. For example, you could
 use global configuration for storing Jira credentials.
 
 .. code-block:: text
@@ -235,6 +235,8 @@ use global configuration for storing Jira credentials.
     url:https://barseghyanartur.atlassian.net/
     username:user@domain.com
     token:abcd1234
+
+Note, however, that sections are copied over entirely.
 
 Tips and tricks
 ===============
@@ -277,9 +279,16 @@ Sometimes checking logs could be handy. ``Matyan`` logs are stored in the
 directory, from which you are running the ``generate-changelog`` (or any
 other ``Matyan``) command.
 
+Update your ``.matyan.ini`` configuration in the following way:
+
+.. code-block:: text
+
+    [Settings]
+    debug=true
+
 .. code-block:: sh
 
-    tail -f /path/to/your/matyan.log
+    tail -f /path/to/your/project/matyan.log
 
 If you want to modify current logging, use ``MATYAN_LOGGING_CONFIG``
 environment variable.
