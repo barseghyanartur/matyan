@@ -152,7 +152,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             include_other=False,
             path=self.test_dir
         )
-        self.assertEqual(str(res), self.json_no_args_out)
+        self.assertEqual(str(dict(res)), self.json_no_args_out)
         return res
 
     @log_info
@@ -163,7 +163,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             show_releases=True,
             path=self.test_dir
         )
-        self.assertEqual(str(res), self.json_show_releases_out)
+        self.assertEqual(str(dict(res)), self.json_show_releases_out)
         return res
 
     @log_info
@@ -176,7 +176,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             path=self.test_dir
         )
         self.assertEqual(
-            str(res),
+            str(dict(res)),
             self.json_latest_release_show_releases_out
         )
         return res
@@ -191,7 +191,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             path=self.test_dir
         )
         self.assertEqual(
-            str(res),
+            str(dict(res)),
             self.json_show_releases_headings_only_out
         )
         return res

@@ -1,4 +1,5 @@
 import argparse
+from collections import OrderedDict
 import copy
 import json
 import os
@@ -141,7 +142,7 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     log_tags = text_log_tags.split("\n")
     commit_tags_list = [s.split(' ', 1)[0].split('\t', 1) for s in log_tags]
     commit_tags = dict([l for l in commit_tags_list if len(l) > 1])
-
+    # import ipdb; ipdb.set_trace()
     return {
         'TEXT_LOG_MERGES': text_log_merges,
         'LOG_MERGES': log_merges,
@@ -451,7 +452,10 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between, path=path)
     settings = get_settings()
-    releases_tree = {}
+    # releases_tree = {}
+    releases_tree = OrderedDict(
+        {_t: {} for _, _t in logs['COMMIT_TAGS'].items()}
+    )
 
     cur_branch = None
     cur_branch_type = None
@@ -686,6 +690,9 @@ def prepare_releases_changelog(
                     'ticket_number': ticket_number,
                     'title': commit_message,
                 }
+
+    # if UNRELEASED in releases_tree:
+    #     releases_tree.move_to_end(UNRELEASED, last=False)
 
     if unreleased_only:
         return {UNRELEASED: releases_tree.get(UNRELEASED, {})}
