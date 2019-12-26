@@ -152,7 +152,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             include_other=False,
             path=self.test_dir
         )
-        self.assertEqual(str(dict(res)), self.json_no_args_out)
+        self.assertEqual(str(res), self.json_no_args_out)
         return res
 
     @log_info

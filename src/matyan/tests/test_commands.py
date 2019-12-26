@@ -130,7 +130,7 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
             'json-changelog',
             '--show-releases'
         ]).strip().decode()
-        self.assertEqual(res, self.json_show_releases_out)
+        self.assertEqual(str(res), self.json_show_releases_out)
         return res
 
     @log_info
@@ -142,7 +142,7 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
             '--latest-release'
         ]).strip().decode()
         self.assertEqual(
-            res,
+            str(res),
             self.json_latest_release_show_releases_out
         )
         return res
@@ -156,7 +156,7 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
             '--headings-only'
         ]).strip().decode()
         self.assertEqual(
-            res,
+            str(res),
             self.json_show_releases_headings_only_out
         )
         return res
@@ -169,7 +169,7 @@ class TestCommands(unittest.TestCase, ChangelogMixin):
             '--headings-only'
         ]).strip().decode()
         self.assertEqual(
-            res,
+            str(res),
             self.json_headings_only_out
         )
         return res
