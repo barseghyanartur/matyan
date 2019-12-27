@@ -6,7 +6,7 @@ import os
 import re
 import sys
 from shutil import copyfile
-from typing import Any, AnyStr, Dict, Type, Union
+from typing import Any, AnyStr, Dict, List, Tuple, Type, Union
 from git import Git
 from git.exc import GitCommandError
 
@@ -18,6 +18,7 @@ from .labels import (
     BRANCH_TYPE_OTHER,
     BRANCH_TYPES,
     get_ignore_commits_prefixes,
+    get_ignore_commits_regex_patterns,
     get_settings,
     IGNORE_COMMITS_EXACT_WORDS,
     UNRELEASED,
@@ -54,6 +55,20 @@ __all__ = (
     'prepare_releases_changelog',
     'validate_between',
 )
+
+
+def is_regex_ignored_commit(
+    regex_patterns: Union[List[str], Tuple[str]],
+    commit_message: str
+) -> bool:
+    for ignore_commit_re in regex_patterns:
+        try:
+            if re.match(ignore_commit_re, commit_message).group():
+                return True
+        except AttributeError:
+            pass
+
+    return False
 
 
 def get_repository(path: str = None) -> Git:
@@ -421,6 +436,7 @@ def prepare_releases_changelog(
     branch_types = {}
 
     ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
+    ignore_commits_regex_patterns = tuple(get_ignore_commits_regex_patterns())
 
     fetcher = None
 
@@ -550,16 +566,25 @@ def prepare_releases_changelog(
                 ticket_number = ''
                 commit_message = entry['title'][:]
 
-            commit_message = unslugify(commit_message)
-            commit_message = capitalize(commit_message)
-            commit_message = add_final_dot(commit_message)
-
             # Ignore the following messages
             if commit_message.lower() in IGNORE_COMMITS_EXACT_WORDS:
                 continue
 
+            # Ignore the following messages
             if commit_message.lower().startswith(ignore_commits_prefixes):
                 continue
+
+            # Ignore the following messages
+            if ignore_commits_regex_patterns:
+                if is_regex_ignored_commit(
+                    ignore_commits_regex_patterns,
+                    commit_message
+                ):
+                    continue
+
+            commit_message = unslugify(commit_message)
+            commit_message = capitalize(commit_message)
+            commit_message = add_final_dot(commit_message)
 
             commit_hash = commit_message \
                 if unique_commit_messages \

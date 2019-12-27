@@ -57,22 +57,6 @@ def get_all_branch_types() -> Dict[str, str]:
     return branch_types
 
 
-# def get_unreleased():
-#     """Get unreleased.
-#
-#     :return:
-#     """
-#     return dict(CONFIG['Unreleased'])
-#
-#
-# def get_unreleased_key() -> str:
-#     return [k for k in get_unreleased().keys()][0]
-#
-#
-# def get_unreleased_label() -> str:
-#     return [k for k in get_unreleased().keys()][1]
-
-
 def get_unreleased_key_label():
     """Get unreleased.
 
@@ -111,24 +95,19 @@ def get_ignore_commits_regex_patterns() -> List[str]:
     :return:
     """
     try:
-        return CONFIG['IgnoreCommits']['regex'].split('\n')
+        return [
+            r'{}'.format(_s)
+            for _s
+            in CONFIG['IgnoreCommits']['regex'].split('\n')
+        ]
     except KeyError:
         return []
 
+
 # Constants
-
-
 BRANCH_TYPE_OTHER = get_other_branch_type_key()  # 'other'
 BRANCH_TYPES = get_all_branch_types()
-# BRANCH_TYPES = {
-#     'other': "Other",
-#     'feature': "Features",
-#     'bugfix': "Bugfixes",
-#     'hotfix': "Hotfixes",
-#     'deprecation': "Deprecations",
-# }
 
-# UNRELEASED = 'unreleased'
 UNRELEASED, UNRELEASED_LABEL = get_unreleased_key_label()
 
 IGNORE_COMMITS_EXACT_WORDS = get_ignore_commits_exact_words()
