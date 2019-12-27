@@ -15,6 +15,13 @@ are used for versioning (schema follows below):
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+0.4.4
+-----
+2019-12-27
+
+- Minor fixes.
+- Add regex ignore patterns.
+
 0.4.3
 -----
 2019-12-26

@@ -6,38 +6,23 @@ import os
 import re
 import sys
 from shutil import copyfile
-from typing import Union, Dict, AnyStr, Type, Any, List
+from typing import Any, AnyStr, Dict, Type, Union
 from git import Git
 from git.exc import GitCommandError
 
 from .auto_correct import add_final_dot, capitalize, unslugify
 from .constants import PRETTY_FORMAT, TICKET_NUMBER_OTHER
+from .fetchers import FetcherRegistry
+from .helpers import project_dir
 from .labels import (
-    # get_all_branch_types,
-    # get_branch_types,
-    # get_ignore_commits_exact_words,
-    get_ignore_commits_prefixes,
-    # get_other_branch_type,
-    # get_other_branch_type_key,
-    # get_unreleased,
-    # get_unreleased_key,
-    # get_unreleased_key_label,
-    get_settings,
     BRANCH_TYPE_OTHER,
     BRANCH_TYPES,
+    get_ignore_commits_prefixes,
+    get_settings,
     IGNORE_COMMITS_EXACT_WORDS,
     UNRELEASED,
-    UNRELEASED_LABEL,
 )
-from .fetchers import FetcherRegistry, BaseFetcher
-from .renderers import (
-    BaseRenderer,
-    HistoricalMarkdownRenderer,
-    MarkdownRenderer,
-    RendererRegistry,
-    RestructuredTextRenderer,
-)
-from .helpers import project_dir
+from .logger import LOGGER
 from .patterns import (
     REGEX_PATTERN_BRANCH_NAME,
     REGEX_PATTERN_COMMIT,
@@ -45,9 +30,12 @@ from .patterns import (
     REGEX_PATTERN_MERGED_BRANCH_NAME,
     REGEX_PATTERN_TAG,
 )
-from .logger import LOGGER
-
-DEBUG = os.environ.get('DEBUG', False)
+from .renderers import (
+    HistoricalMarkdownRenderer,
+    MarkdownRenderer,
+    RendererRegistry,
+    RestructuredTextRenderer,
+)
 
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
@@ -162,34 +150,6 @@ def get_branch_type(branch_type: AnyStr) -> str:
     """
     branch_type = branch_type.lower()
     return branch_type if branch_type in BRANCH_TYPES else BRANCH_TYPE_OTHER
-
-
-# def generate_empty_tree() -> Dict[str, dict]:
-#     """Generate empty tree.
-#
-#     Example:
-#
-#         {
-#             'feature': {},
-#             'bugfix': {},
-#             'hotfix': {},
-#             'deprecation': {},
-#             'other': {
-#                 TICKET_NUMBER_OTHER: {
-#                     # 'title': '',
-#                     'commits': {}
-#                 }
-#             },
-#         }
-#
-#     :return:
-#     """
-#     empty_tree = {}
-#     for key, value in BRANCH_TYPES.items():
-#         empty_tree.update({key: {}})
-#
-#     empty_tree[BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {'commits': {}}
-#     return empty_tree
 
 
 def prepare_changelog(
@@ -452,7 +412,6 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between, path=path)
     settings = get_settings()
-    # releases_tree = {}
     releases_tree = OrderedDict(
         {_t: {} for _, _t in logs['COMMIT_TAGS'].items()}
     )
@@ -462,10 +421,6 @@ def prepare_releases_changelog(
     branch_types = {}
 
     ignore_commits_prefixes = tuple(get_ignore_commits_prefixes())
-
-    # LOGGER.warning('ignore_commits_prefixes')
-    # LOGGER.warning(ignore_commits_prefixes)
-    # LOGGER.warning('END ignore_commits_prefixes')
 
     fetcher = None
 
@@ -562,9 +517,6 @@ def prepare_releases_changelog(
     for json_entry in filter(None, logs['LOG']):
         try:
             entry = json.loads(json_entry)
-            # LOGGER.warning('entry')
-            # LOGGER.warning(entry)
-            # LOGGER.warning('END entry')
         except json.decoder.JSONDecodeError:
             continue  # TODO: fix this (when commit message contains " symbols)
 
@@ -709,19 +661,6 @@ def validate_between(between: str = None) -> bool:
     if between:
         pass  # TODO
     return True
-
-
-# def get_latest_release(path: str = None) -> str:
-#     """Get latest release.
-#
-#     Command:
-#
-#         git describe --match '*.*' --abbr=0
-#
-#     :return:
-#     """
-#     repository = get_repository(path)
-#     return repository.describe('--match', '*.*', '--abbr=0')
 
 
 def get_latest_releases(limit: int = 2, path: str = None) -> list:
@@ -982,13 +921,6 @@ def generate_changelog_cli() -> Type[None]:
         help="Renderer",
         choices=list(RendererRegistry.REGISTRY.keys())
     )
-    # parser.add_argument(
-    #     '--debug',
-    #     dest="debug",
-    #     default=False,
-    #     action='store_true',
-    #     help="Enable debug mode",
-    # )
     args = parser.parse_args(sys.argv[1:])
     between = args.between if validate_between(args.between) else None
     include_other = not args.no_other
@@ -999,7 +931,6 @@ def generate_changelog_cli() -> Type[None]:
     fetch_title = args.fetch_title
     fetch_description = args.fetch_description
     renderer_uid = args.renderer
-    # debug = args.debug
 
     renderer_cls = RendererRegistry.get(renderer_uid, MarkdownRenderer)
 

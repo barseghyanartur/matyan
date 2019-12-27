@@ -1,5 +1,5 @@
 from configparser import SectionProxy
-from typing import Union, Dict, AnyStr, Type, List
+from typing import Dict, List
 
 from .config import CONFIG
 
@@ -7,14 +7,13 @@ __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
-    # 'get_unreleased',
-    # 'get_unreleased_key',
     'BRANCH_TYPE_OTHER',
     'BRANCH_TYPES',
     'get_all_branch_types',
     'get_branch_types',
     'get_ignore_commits_exact_words',
     'get_ignore_commits_prefixes',
+    'get_ignore_commits_regex_patterns',
     'get_other_branch_type',
     'get_other_branch_type_key',
     'get_settings',
@@ -102,6 +101,17 @@ def get_ignore_commits_prefixes() -> List[str]:
     """
     try:
         return CONFIG['IgnoreCommits']['prefix'].split('\n')
+    except KeyError:
+        return []
+
+
+def get_ignore_commits_regex_patterns() -> List[str]:
+    """Get ignore commits regex patterns.
+
+    :return:
+    """
+    try:
+        return CONFIG['IgnoreCommits']['regex'].split('\n')
     except KeyError:
         return []
 

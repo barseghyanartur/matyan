@@ -1,7 +1,12 @@
 from typing import Dict, Type, List
 
 from ..config import CONFIG
-from ..labels import BRANCH_TYPES, BRANCH_TYPE_OTHER, UNRELEASED_LABEL, UNRELEASED
+from ..labels import (
+    BRANCH_TYPE_OTHER,
+    BRANCH_TYPES,
+    UNRELEASED,
+    UNRELEASED_LABEL,
+)
 from ..logger import LOGGER
 from ..registry import Registry
 
@@ -73,7 +78,6 @@ class BaseRenderer(AbstractRenderer):
                          include_other: bool,
                          headings_only: bool,
                          fetch_description: bool) -> str:
-        # changelog = []
         self.changelog = []
         for branch_type, tickets in tree.items():
             # Skip adding orphaned commits if explicitly asked not to.
@@ -87,12 +91,6 @@ class BaseRenderer(AbstractRenderer):
             if BRANCH_TYPES.get(branch_type):
                 # Feature type label `append_feature_type`
                 self.append_feature_type(branch_type)
-                # changelog.append(
-                #     "\n**{}**{}".format(
-                #         BRANCH_TYPES.get(branch_type),
-                #         '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                #     )
-                # )
 
             # Add tickets
             for ticket_number, ticket_data in tickets.items():
@@ -105,23 +103,12 @@ class BaseRenderer(AbstractRenderer):
                         ticket_number,
                         ticket_data['title']
                     )
-                    # changelog.append(
-                    #     "\n*{} {}*".format(
-                    #         ticket_number,
-                    #         ticket_data['title']
-                    #     )
-                    # )
 
                     if fetch_description and ticket_data['description']:
                         # Description quote `append_ticket_description`
                         self.append_ticket_description(
                             ticket_data['description']
                         )
-                        # changelog.append(
-                        #     "\n```\n{}\n```".format(
-                        #         ticket_data['description'].strip()
-                        #     )
-                        # )
 
                 if headings_only:
                     continue
@@ -134,16 +121,8 @@ class BaseRenderer(AbstractRenderer):
                         branch_type=branch_type,
                         counter=counter
                     )
-                    # changelog.append(
-                    #     "{}- {} [{}]".format(
-                    #         '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                    #         commit_data['title'],
-                    #         commit_data['author']
-                    #     )
-                    # )
                     counter = counter + 1
 
-        # return '\n'.join(changelog)
         return '\n'.join(self.changelog)
 
     def render_releases_changelog(self,
@@ -151,7 +130,6 @@ class BaseRenderer(AbstractRenderer):
                                   include_other: bool,
                                   headings_only: bool,
                                   fetch_description: bool) -> str:
-        # changelog = []
         self.changelog = []
         for release, branches in releases_tree.items():
             release_label = UNRELEASED_LABEL \
@@ -160,7 +138,6 @@ class BaseRenderer(AbstractRenderer):
 
             # Release label `append_release`
             self.append_release(release_label)
-            # changelog.append("\n### {}".format(release_label))
 
             for branch_type, tickets in branches.items():
 
@@ -175,12 +152,6 @@ class BaseRenderer(AbstractRenderer):
                 # Feature type label `append_feature_type`
                 if BRANCH_TYPES.get(branch_type):
                     self.append_feature_type(branch_type)
-                    # changelog.append(
-                    #     "\n**{}**{}".format(
-                    #         BRANCH_TYPES.get(branch_type),
-                    #         '\n' if branch_type == BRANCH_TYPE_OTHER else ''
-                    #     )
-                    # )
 
                 # Add tickets
                 for ticket_number, ticket_data in tickets.items():
@@ -201,43 +172,26 @@ class BaseRenderer(AbstractRenderer):
                             ticket_number,
                             ticket_data['title']
                         )
-                        # changelog.append(
-                        #     "\n*{} {}*".format(
-                        #         ticket_number,
-                        #         ticket_data['title']
-                        #     )
-                        # )
 
                         if fetch_description and ticket_data['description']:
                             # Description quote `append_ticket_description`
                             self.append_ticket_description(
                                 ticket_data['description']
                             )
-                            # changelog.append(
-                            #     "\n```\n{}\n```".format(
-                            #         ticket_data['description'].strip()
-                            #     )
-                            # )
 
                     if headings_only:
                         continue
 
                     counter = 0
-                    for commit_hash, commit_data in ticket_data['commits'].items():  # NOQA
+                    for commit_hash, commit_data \
+                            in ticket_data['commits'].items():
+
                         # Commit text `append_commit_message`
                         self.append_commit_message(
                             commit_data=commit_data,
                             branch_type=branch_type,
                             counter=counter
                         )
-                        # changelog.append(
-                        #     "{}- {} [{}]".format(
-                        #         '\n' if counter == 0 and branch_type != BRANCH_TYPE_OTHER else '',
-                        #         commit_data['title'],
-                        #         commit_data['author']
-                        #     )
-                        # )
                         counter = counter + 1
 
-        # return '\n'.join(changelog)
         return '\n'.join(self.changelog)
