@@ -221,6 +221,7 @@ class TestCore(unittest.TestCase, ChangelogMixin):
     def test_merge_branch_patterns(self):
         """Test generate changelog."""
         merge_messages = {
+            # JIRA/BitBucket style
             'Merge pull request #1234 in PROJ/repo from bugfix/PROJ-'
             '3545-currency-not-saved-at-sso to dev': {
                 'ticket_number': 'PROJ-3545',
@@ -230,6 +231,17 @@ class TestCore(unittest.TestCase, ChangelogMixin):
             '(pull request #3)': {
                 'ticket_number': 'MSFT-1236',
                 'branch_title': 'prevent-duplicate-postal-codes'
+            },
+            # GitHub style
+            'Merge pull request #24 from '
+            'barseghyanartur/feature/21-Add-optional-fetch-info-from-JIRA': {
+                'ticket_number': '21',
+                'branch_title': 'Add-optional-fetch-info-from-JIRA'
+            },
+            'Merge pull request #29 from '
+            'barseghyanartur/bugfix/28-Ensure-correct-order-of-releases': {
+                'ticket_number': '28',
+                'branch_title': 'Ensure-correct-order-of-releases'
             },
         }
         for message, parsed in merge_messages.items():

@@ -170,13 +170,13 @@ class BaseRenderer(AbstractRenderer):
                         # Ticket name `append_ticket_title`
                         self.append_ticket_title(
                             ticket_number,
-                            ticket_data['title']
+                            ticket_data.get('title')
                         )
 
                         if fetch_description and ticket_data['description']:
                             # Description quote `append_ticket_description`
                             self.append_ticket_description(
-                                ticket_data['description']
+                                ticket_data.get('description')
                             )
 
                     if headings_only:
