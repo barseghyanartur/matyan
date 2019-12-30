@@ -131,6 +131,18 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     log = text_log.split("\n")
 
     # Tags log
+    tags_with_dates_text = repository.log([
+        '--tags',
+        '--simplify-by-decoration',
+        '--pretty=%d,%ai'
+    ])
+    tags_with_dates = tags_with_dates_text.split('\n')
+    date_tags = {}
+    for _log_data_raw in tags_with_dates:
+        _tag, _date = _log_data_raw.split(',')
+        _tag = _tag.strip().replace('(tag: ', '').replace(')', '')
+        date_tags.update({_tag: _date})
+
     text_log_tags_args = []
     # if lower and upper:
     #     text_log_tags_args.append(
@@ -145,7 +157,6 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     log_tags = text_log_tags.split("\n")
     commit_tags_list = [s.split(' ', 1)[0].split('\t', 1) for s in log_tags]
     commit_tags = dict([l for l in commit_tags_list if len(l) > 1])
-
     return {
         'TEXT_LOG_MERGES': text_log_merges,
         'LOG_MERGES': log_merges,
@@ -154,6 +165,7 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
         'TEXT_LOG_TAGS': text_log_tags,
         'LOG_TAGS': log_tags,
         'COMMIT_TAGS': commit_tags,
+        'DATE_TAGS': date_tags,
     }
 
 
@@ -427,8 +439,13 @@ def prepare_releases_changelog(
     """
     logs = get_logs(between=between, path=path)
     settings = get_settings()
+
     releases_tree = OrderedDict(
-        {_t: {} for _, _t in logs['COMMIT_TAGS'].items()}
+        {
+            _t: {}  # 'date': logs['DATE_TAGS'].get(_t)
+            for _, _t
+            in logs['COMMIT_TAGS'].items()
+        }
     )
 
     cur_branch = None
