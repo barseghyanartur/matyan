@@ -97,14 +97,18 @@ class BaseRenderer(AbstractRenderer):
                 if 'title' not in ticket_data:
                     continue
 
-                if branch_type != BRANCH_TYPE_OTHER:
+                if branch_type != BRANCH_TYPE_OTHER and 'title' in ticket_data:
                     # Ticket name `append_ticket_title`
                     self.append_ticket_title(
                         ticket_number,
                         ticket_data['title']
                     )
 
-                    if fetch_description and ticket_data['description']:
+                    if (
+                        fetch_description
+                        and 'description' in ticket_data
+                        and ticket_data['description']
+                    ):
                         # Description quote `append_ticket_description`
                         self.append_ticket_description(
                             ticket_data['description']
@@ -166,14 +170,21 @@ class BaseRenderer(AbstractRenderer):
                     #     LOGGER.warning(ticket_number)
                     #     LOGGER.warning(ticket_data)
 
-                    if branch_type != BRANCH_TYPE_OTHER:
+                    if (
+                        branch_type != BRANCH_TYPE_OTHER
+                        and 'title' in ticket_data
+                    ):
                         # Ticket name `append_ticket_title`
                         self.append_ticket_title(
                             ticket_number,
                             ticket_data['title']
                         )
 
-                        if fetch_description and ticket_data['description']:
+                        if (
+                            fetch_description
+                            and 'description' in ticket_data
+                            and ticket_data['description']
+                        ):
                             # Description quote `append_ticket_description`
                             self.append_ticket_description(
                                 ticket_data['description']
