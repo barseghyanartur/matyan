@@ -131,16 +131,15 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     log = text_log.split("\n")
 
     # Tags log
-    tags_with_dates_text = repository.log([
-        '--tags',
-        '--simplify-by-decoration',
-        '--pretty=%d,%ai'
+    tags_with_dates_text = repository.tag([
+        '-l',
+        '--format=%(refname:short),%(taggerdate:short)'
     ])
     tags_with_dates = tags_with_dates_text.split('\n')
     date_tags = {}
     for _log_data_raw in tags_with_dates:
-        _tag, _date = _log_data_raw.split(',', maxsplit=1)
-        _tag = _tag.strip().replace('(tag: ', '').replace(')', '')
+        _tag, _date = _log_data_raw.split(',')
+        _tag = _tag.strip()
         if _tag:
             date_tags.update({_tag: _date})
 
@@ -444,7 +443,7 @@ def prepare_releases_changelog(
 
     releases_tree = OrderedDict(
         {
-            _t: {}  # 'date': logs['DATE_TAGS'].get(_t)
+            _t: {'releases': {}, 'date': logs['DATE_TAGS'].get(_t)}
             for _, _t
             in logs['COMMIT_TAGS'].items()
         }
@@ -480,6 +479,7 @@ def prepare_releases_changelog(
             entry = json.loads(json_entry)
         except json.decoder.JSONDecodeError:
             continue  # TODO: fix this (when commit message contains " symbols)
+
         merge_commit = True if ' ' in entry['merge'] else False
         if merge_commit:
             match = re.match(REGEX_PATTERN_MERGED_BRANCH_NAME, entry['title'])
@@ -522,14 +522,20 @@ def prepare_releases_changelog(
             if not release:
                 release = UNRELEASED
 
-            if release not in releases_tree:
-                releases_tree[release] = {}
+            if (
+                release not in releases_tree
+                or 'branches' not in releases_tree.get(release, {})
+            ):
+                releases_tree[release] = {
+                    'branches': {},
+                    'date': logs['DATE_TAGS'].get(release, None),
+                }
 
-            if branch_type not in releases_tree[release]:
-                releases_tree[release][branch_type] = {}
+            if branch_type not in releases_tree[release]['branches']:
+                releases_tree[release]['branches'][branch_type] = {}
 
-            if ticket_number not in releases_tree[release][branch_type]:
-                releases_tree[release][branch_type][ticket_number] = {
+            if ticket_number not in releases_tree[release]['branches'][branch_type]:
+                releases_tree[release]['branches'][branch_type][ticket_number] = {  # NOQA
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
                     'date': entry['datetime'],
@@ -540,7 +546,6 @@ def prepare_releases_changelog(
                     'description': branch_description,
                     'commits': {},
                     'release': release,
-                    # 'release_date': logs['DATE_TAGS'].get(release, None),
                 }
             branch_types.update({ticket_number: branch_type})
     
@@ -616,20 +621,26 @@ def prepare_releases_changelog(
 
             if cur_branch:
 
-                if release not in releases_tree:
-                    releases_tree[release] = {}
+                if (
+                    release not in releases_tree
+                    or 'branches' not in releases_tree.get(release, {})
+                ):
+                    releases_tree[release] = {
+                        'branches': {},
+                        'date': logs['DATE_TAGS'].get(release, None),
+                    }
 
-                if cur_branch_type not in releases_tree[release]:
-                    releases_tree[release][cur_branch_type] = {}
+                if cur_branch_type not in releases_tree[release]['branches']:
+                    releases_tree[release]['branches'][cur_branch_type] = {}
 
-                if cur_branch not in releases_tree[release][cur_branch_type]:
-                    releases_tree[release][cur_branch_type][cur_branch] = {}
+                if cur_branch not in releases_tree[release]['branches'][cur_branch_type]:
+                    releases_tree[release]['branches'][cur_branch_type][cur_branch] = {}
 
-                if 'commits' not in releases_tree[release][cur_branch_type][cur_branch]:
-                    releases_tree[release][cur_branch_type][cur_branch]['commits'] = {}
+                if 'commits' not in releases_tree[release]['branches'][cur_branch_type][cur_branch]:
+                    releases_tree[release]['branches'][cur_branch_type][cur_branch]['commits'] = {}
 
                 if cur_branch == ticket_number:
-                    releases_tree[release][cur_branch_type][cur_branch]['commits'][commit_hash] = {  # NOQA
+                    releases_tree[release]['branches'][cur_branch_type][cur_branch]['commits'][commit_hash] = {  # NOQA
                         'commit_hash': entry['commit_hash'],
                         'commit_abbr': entry['commit_abbr'],
                         'author': entry['author'],
@@ -643,19 +654,25 @@ def prepare_releases_changelog(
                         BRANCH_TYPE_OTHER
                     )
                     try:
-                        if release not in releases_tree:
-                            releases_tree[release] = {}
+                        if (
+                            release not in releases_tree
+                            or 'branches' not in releases_tree.get(release, {})
+                        ):
+                            releases_tree[release] = {
+                                'branches': {},
+                                'date': logs['DATE_TAGS'].get(release, None),
+                            }
 
-                        if other_branch_type not in releases_tree[release]:
-                            releases_tree[release][other_branch_type] = {}
+                        if other_branch_type not in releases_tree[release]['branches']:
+                            releases_tree[release]['branches'][other_branch_type] = {}
 
-                        if ticket_number not in releases_tree[release][other_branch_type]:
-                            releases_tree[release][other_branch_type][ticket_number] = {}
+                        if ticket_number not in releases_tree[release]['branches'][other_branch_type]:
+                            releases_tree[release]['branches'][other_branch_type][ticket_number] = {}
 
-                        if 'commits' not in releases_tree[release][other_branch_type][ticket_number]:
-                            releases_tree[release][other_branch_type][ticket_number]['commits'] = {}
+                        if 'commits' not in releases_tree[release]['branches'][other_branch_type][ticket_number]:
+                            releases_tree[release]['branches'][other_branch_type][ticket_number]['commits'] = {}
 
-                        releases_tree[release][other_branch_type][ticket_number]['commits'][commit_hash] = {  # NOQA
+                        releases_tree[release]['branches'][other_branch_type][ticket_number]['commits'][commit_hash] = {  # NOQA
                             'commit_hash': entry['commit_hash'],
                             'commit_abbr': entry['commit_abbr'],
                             'author': entry['author'],
@@ -667,19 +684,25 @@ def prepare_releases_changelog(
                         # TODO: Anything here?
                         pass
             else:
-                if release not in releases_tree:
-                    releases_tree[release] = {}
+                if (
+                    release not in releases_tree
+                    or 'branches' not in releases_tree.get(release, {})
+                ):
+                    releases_tree[release] = {
+                        'branches': {},
+                        'date': logs['DATE_TAGS'].get(release, None),
+                    }
 
-                if BRANCH_TYPE_OTHER not in releases_tree[release]:
-                    releases_tree[release][BRANCH_TYPE_OTHER] = {}
+                if BRANCH_TYPE_OTHER not in releases_tree[release]['branches']:
+                    releases_tree[release]['branches'][BRANCH_TYPE_OTHER] = {}
 
-                if TICKET_NUMBER_OTHER not in releases_tree[release][BRANCH_TYPE_OTHER]:
-                    releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {}
+                if TICKET_NUMBER_OTHER not in releases_tree[release]['branches'][BRANCH_TYPE_OTHER]:
+                    releases_tree[release]['branches'][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER] = {}
 
-                if 'commits' not in releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]:
-                    releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'] = {}
+                if 'commits' not in releases_tree[release]['branches'][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]:
+                    releases_tree[release]['branches'][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'] = {}
 
-                releases_tree[release][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'][commit_hash] = {  # NOQA
+                releases_tree[release]['branches'][BRANCH_TYPE_OTHER][TICKET_NUMBER_OTHER]['commits'][commit_hash] = {  # NOQA
                     'commit_hash': entry['commit_hash'],
                     'commit_abbr': entry['commit_abbr'],
                     'author': entry['author'],

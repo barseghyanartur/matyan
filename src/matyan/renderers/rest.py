@@ -24,6 +24,9 @@ class RestructuredTextRenderer(BaseRenderer):
             )
         )
 
+    def append_release_date(self, release_date: str):
+        self.changelog.append("*{}*".format(release_date))
+
     def append_feature_type(self, branch_type: str):
         branch_type_label = BRANCH_TYPES.get(branch_type)
         self.changelog.append(

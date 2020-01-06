@@ -58,6 +58,9 @@ class BaseRenderer(AbstractRenderer):
     def append_release(self, release_label: str):
         raise NotImplementedError
 
+    def append_release_date(self, release_date: str):
+        raise NotImplementedError
+
     def append_feature_type(self, branch_type: str):
         raise NotImplementedError
 
@@ -135,7 +138,7 @@ class BaseRenderer(AbstractRenderer):
                                   headings_only: bool,
                                   fetch_description: bool) -> str:
         self.changelog = []
-        for release, branches in releases_tree.items():
+        for release, release_data in releases_tree.items():
             release_label = UNRELEASED_LABEL \
                 if release == UNRELEASED \
                 else release
@@ -143,7 +146,10 @@ class BaseRenderer(AbstractRenderer):
             # Release label `append_release`
             self.append_release(release_label)
 
-            for branch_type, tickets in branches.items():
+            if release_data.get('date', ''):
+                self.append_release_date(release_data.get('date', ''))
+
+            for branch_type, tickets in release_data.get('branches', {}).items():
 
                 # Skip adding orphaned commits if explicitly asked not to.
                 if branch_type == BRANCH_TYPE_OTHER and not include_other:

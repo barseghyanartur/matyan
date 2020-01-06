@@ -19,6 +19,9 @@ class MarkdownRenderer(BaseRenderer):
     def append_release(self, release_label: str):
         self.changelog.append("\n### {}".format(release_label))
 
+    def append_release_date(self, release_date: str):
+        self.changelog.append("*{}*".format(release_date))
+
     def append_feature_type(self, branch_type: str):
         self.changelog.append(
             "\n#### {}{}".format(
