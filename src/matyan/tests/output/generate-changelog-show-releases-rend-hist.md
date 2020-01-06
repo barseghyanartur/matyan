@@ -1,4 +1,5 @@
 ### 0.2
+*2019-11-17*
 
 **Feature**
 
@@ -12,6 +13,7 @@
 - Improve document sharing. Add option to share via GDrive. [Artur Barseghyan]
 
 ### 0.1
+*2019-11-17*
 
 **Bugfix**
 

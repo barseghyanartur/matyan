@@ -1,5 +1,6 @@
 0.2
 ---
+*2019-11-17*
 
 Feature
 ~~~~~~~
@@ -17,6 +18,7 @@ MSFT-1237 Improve document sharing
 
 0.1
 ---
+*2019-11-17*
 
 Bugfix
 ~~~~~~
