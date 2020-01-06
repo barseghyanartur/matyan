@@ -58,6 +58,9 @@ class BaseRenderer(AbstractRenderer):
     def append_release(self, release_label: str):
         raise NotImplementedError
 
+    def append_release_date(self, release_date: str):
+        raise NotImplementedError
+
     def append_feature_type(self, branch_type: str):
         raise NotImplementedError
 
@@ -97,14 +100,18 @@ class BaseRenderer(AbstractRenderer):
                 if 'title' not in ticket_data:
                     continue
 
-                if branch_type != BRANCH_TYPE_OTHER:
+                if branch_type != BRANCH_TYPE_OTHER and 'title' in ticket_data:
                     # Ticket name `append_ticket_title`
                     self.append_ticket_title(
                         ticket_number,
                         ticket_data['title']
                     )
 
-                    if fetch_description and ticket_data['description']:
+                    if (
+                        fetch_description
+                        and 'description' in ticket_data
+                        and ticket_data['description']
+                    ):
                         # Description quote `append_ticket_description`
                         self.append_ticket_description(
                             ticket_data['description']
@@ -131,7 +138,7 @@ class BaseRenderer(AbstractRenderer):
                                   headings_only: bool,
                                   fetch_description: bool) -> str:
         self.changelog = []
-        for release, branches in releases_tree.items():
+        for release, release_data in releases_tree.items():
             release_label = UNRELEASED_LABEL \
                 if release == UNRELEASED \
                 else release
@@ -139,7 +146,10 @@ class BaseRenderer(AbstractRenderer):
             # Release label `append_release`
             self.append_release(release_label)
 
-            for branch_type, tickets in branches.items():
+            if release_data.get('date', ''):
+                self.append_release_date(release_data.get('date', ''))
+
+            for branch_type, tickets in release_data.get('branches', {}).items():
 
                 # Skip adding orphaned commits if explicitly asked not to.
                 if branch_type == BRANCH_TYPE_OTHER and not include_other:
@@ -166,14 +176,21 @@ class BaseRenderer(AbstractRenderer):
                     #     LOGGER.warning(ticket_number)
                     #     LOGGER.warning(ticket_data)
 
-                    if branch_type != BRANCH_TYPE_OTHER:
+                    if (
+                        branch_type != BRANCH_TYPE_OTHER
+                        and 'title' in ticket_data
+                    ):
                         # Ticket name `append_ticket_title`
                         self.append_ticket_title(
                             ticket_number,
                             ticket_data.get('title')
                         )
 
-                        if fetch_description and ticket_data['description']:
+                        if (
+                            fetch_description
+                            and 'description' in ticket_data
+                            and ticket_data['description']
+                        ):
                             # Description quote `append_ticket_description`
                             self.append_ticket_description(
                                 ticket_data.get('description')

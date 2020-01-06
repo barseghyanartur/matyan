@@ -10,7 +10,7 @@ from .utils import (
 )
 
 __title__ = 'matyan'
-__version__ = '0.4.4'
+__version__ = '0.4.6'
 __author__ = 'Artur Barseghyan'
 __copyright__ = '2019 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
