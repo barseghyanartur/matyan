@@ -32,6 +32,12 @@ setup(
     author='Artur Barseghyan',
     author_email='artur.barseghyan@gmail.com',
     url='https://github.com/barseghyanartur/matyan',
+    project_urls={
+        "Bug Tracker": "https://github.com/barseghyanartur/matyan/",
+        "Documentation": "https://matyan.readthedocs.io/",
+        "Source Code": "https://github.com/barseghyanartur/matyan/",
+        "Changelog": "https://matyan.readthedocs.io/en/latest/changelog.html",
+    },
     package_dir={'': 'src'},
     packages=find_packages(where='./src'),
     entry_points={
