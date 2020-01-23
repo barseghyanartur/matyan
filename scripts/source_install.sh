@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-pip install https://github.com/barseghyanartur/jira-git-changelog/archive/stable.tar.gz
+pip install https://github.com/barseghyanartur/matyan/archive/stable.tar.gz
