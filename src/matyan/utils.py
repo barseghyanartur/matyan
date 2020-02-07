@@ -137,7 +137,7 @@ def get_logs(between: str = None, path: str = None) -> Dict[str, Any]:
     ])
     tags_with_dates = tags_with_dates_text.split('\n')
     date_tags = {}
-    for _log_data_raw in tags_with_dates:
+    for _log_data_raw in filter(None, tags_with_dates):
         _tag, _date = _log_data_raw.split(',')
         _tag = _tag.strip()
         if _tag:
