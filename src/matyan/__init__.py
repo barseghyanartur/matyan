@@ -10,9 +10,9 @@ from .utils import (
 )
 
 __title__ = 'matyan'
-__version__ = '0.4.6'
+__version__ = '0.4.7'
 __author__ = 'Artur Barseghyan'
-__copyright__ = '2019 Artur Barseghyan'
+__copyright__ = '2019-2020 Artur Barseghyan'
 __license__ = 'GPL-2.0-only OR LGPL-2.1-or-later'
 __all__ = (
     'generate_changelog',

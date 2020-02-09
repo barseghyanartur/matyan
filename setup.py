@@ -6,7 +6,7 @@ try:
 except:
     readme = ''
 
-version = '0.4.6'
+version = '0.4.7'
 
 setup(
     name='matyan',
@@ -33,7 +33,7 @@ setup(
     author_email='artur.barseghyan@gmail.com',
     url='https://github.com/barseghyanartur/matyan',
     project_urls={
-        "Bug Tracker": "https://github.com/barseghyanartur/matyan/",
+        "Bug Tracker": "https://github.com/barseghyanartur/matyan/issues",
         "Documentation": "https://matyan.readthedocs.io/",
         "Source Code": "https://github.com/barseghyanartur/matyan/",
         "Changelog": "https://matyan.readthedocs.io/en/latest/changelog.html",

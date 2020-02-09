@@ -7,7 +7,7 @@ from .base import log_info
 from .mixins import ChangelogMixin
 
 __author__ = 'Artur Barseghyan'
-__copyright__ = '2019 Artur Barseghyan'
+__copyright__ = '2019-2020 Artur Barseghyan'
 __license__ = 'GPL 2.0/LGPL 2.1'
 __all__ = ('TestCommands',)
 
